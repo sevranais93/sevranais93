@@ -1,0 +1,1635 @@
+<!DOCTYPE html>
+<html lang="fr" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AutoArbitrage DE ➔ FR | Plateforme d'Import & Arbitrage Automobile</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Chart.js CDN for visual breakdown -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- FontAwesome 6 for automotive & SaaS icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#eff6ff',
+              100: '#dbeafe',
+              500: '#3b82f6',
+              600: '#2563eb',
+              700: '#1d4ed8',
+              900: '#1e3a8a',
+            },
+            profit: {
+              400: '#34d399',
+              500: '#10b981',
+              600: '#059669',
+            },
+            darkBg: '#0f172a',
+            darkCard: '#1e293b',
+            darkBorder: '#334155'
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #0b0f19;
+      color: #f1f5f9;
+    }
+    /* Custom scrollbars */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #111827;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #374151;
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #4b5563;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col bg-[#0b0f19] text-slate-100 antialiased selection:bg-brand-600 selection:text-white">
+
+  <!-- Header & Live Dashboard KPIs -->
+  <header class="border-b border-slate-800 bg-[#0f172a]/95 backdrop-blur sticky top-0 z-40">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-16">
+        <!-- Logo -->
+        <div class="flex items-center space-x-3">
+          <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-600 to-emerald-500 flex items-center justify-center shadow-lg shadow-brand-500/20">
+            <i class="fa-solid fa-car-burst text-white text-lg"></i>
+          </div>
+          <div>
+            <div class="flex items-center space-x-2">
+              <span class="font-extrabold text-lg tracking-tight text-white">AutoArbitrage</span>
+              <span class="text-xs px-2 py-0.5 rounded-full bg-brand-500/20 text-brand-400 font-semibold border border-brand-500/30">DE ➔ FR</span>
+            </div>
+            <p class="text-[11px] text-slate-400">Calculateur Malus, Sourcing & Pilotage d'Import</p>
+          </div>
+        </div>
+
+        <!-- Global Performance Metrics -->
+        <div class="hidden lg:flex items-center space-x-6 text-sm">
+          <div class="flex flex-col text-right">
+            <span class="text-[11px] text-slate-400 uppercase tracking-wider font-medium">Marge Moy. Détectée</span>
+            <span class="text-emerald-400 font-bold font-mono" id="header-avg-margin">+2 840 €</span>
+          </div>
+          <div class="h-8 w-px bg-slate-800"></div>
+          <div class="flex flex-col text-right">
+            <span class="text-[11px] text-slate-400 uppercase tracking-wider font-medium">ROI Moyen Projeté</span>
+            <span class="text-brand-400 font-bold font-mono" id="header-avg-roi">13.4 %</span>
+          </div>
+          <div class="h-8 w-px bg-slate-800"></div>
+          <div class="flex flex-col text-right">
+            <span class="text-[11px] text-slate-400 uppercase tracking-wider font-medium">Véhicules Actifs</span>
+            <span class="text-amber-400 font-bold font-mono" id="header-active-count">5 en cours</span>
+          </div>
+        </div>
+
+        <!-- Quick Status Badge & Action -->
+        <div class="flex items-center space-x-3">
+          <button onclick="switchTab('simulateur')" class="px-3.5 py-1.5 rounded-lg bg-brand-600 hover:bg-brand-500 text-white text-xs font-semibold shadow-md transition-all flex items-center space-x-1.5">
+            <i class="fa-solid fa-plus"></i>
+            <span class="hidden sm:inline">Nouveau Calcul</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Navigation Tabs -->
+      <nav class="flex space-x-1 border-t border-slate-800/80 pt-1 -mb-px overflow-x-auto text-sm">
+        <button onclick="switchTab('simulateur')" id="tab-btn-simulateur" class="tab-btn active px-4 py-2.5 font-medium border-b-2 border-brand-500 text-brand-400 flex items-center space-x-2">
+          <i class="fa-solid fa-calculator"></i>
+          <span>Simulateur & Malus CO2</span>
+        </button>
+        <button onclick="switchTab('radar')" id="tab-btn-radar" class="tab-btn px-4 py-2.5 font-medium border-b-2 border-transparent text-slate-400 hover:text-slate-200 flex items-center space-x-2">
+          <i class="fa-solid fa-satellite-dish"></i>
+          <span>Radar Opportunités DE</span>
+          <span class="bg-brand-500/20 text-brand-400 text-[10px] px-1.5 py-0.5 rounded-full font-bold ml-1">6</span>
+        </button>
+        <button onclick="switchTab('pipeline')" id="tab-btn-pipeline" class="tab-btn px-4 py-2.5 font-medium border-b-2 border-transparent text-slate-400 hover:text-slate-200 flex items-center space-x-2">
+          <i class="fa-solid fa-bars-progress"></i>
+          <span>Pipeline d'Achat & Vente</span>
+          <span id="pipeline-badge-count" class="bg-emerald-500/20 text-emerald-400 text-[10px] px-1.5 py-0.5 rounded-full font-bold ml-1">3</span>
+        </button>
+        <button onclick="switchTab('outils')" id="tab-btn-outils" class="tab-btn px-4 py-2.5 font-medium border-b-2 border-transparent text-slate-400 hover:text-slate-200 flex items-center space-x-2">
+          <i class="fa-solid fa-toolbox"></i>
+          <span>Boîte à Outils & Concessionnaires</span>
+        </button>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Toast Notification Container -->
+  <div id="toast" class="fixed bottom-6 right-6 z-50 transform translate-y-20 opacity-0 transition-all duration-300 pointer-events-none flex items-center space-x-3 bg-slate-800 border border-slate-700 text-white px-4 py-3 rounded-xl shadow-2xl">
+    <div id="toast-icon" class="text-emerald-400 text-lg">
+      <i class="fa-solid fa-circle-check"></i>
+    </div>
+    <div id="toast-message" class="text-sm font-medium">Notification message</div>
+  </div>
+
+  <!-- Main Workspace Content -->
+  <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+
+    <!-- ========================================== -->
+    <!-- TAB 1 : SIMULATEUR & MALUS CALCULATOR -->
+    <!-- ========================================== -->
+    <section id="tab-simulateur" class="tab-content block">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+        <!-- Form Column (Left: 7 cols) -->
+        <div class="lg:col-span-7 space-y-6">
+          <div class="bg-slate-900/90 border border-slate-800 rounded-2xl p-5 shadow-xl">
+            <div class="flex items-center justify-between pb-4 border-b border-slate-800">
+              <div>
+                <h2 class="text-base font-bold text-white flex items-center space-x-2">
+                  <i class="fa-solid fa-sliders text-brand-400"></i>
+                  <span>Paramètres du Véhicule & Transaction</span>
+                </h2>
+                <p class="text-xs text-slate-400 mt-0.5">Calcul en temps réel de la fiscalité d'importation et du prix de revient.</p>
+              </div>
+              <button onclick="resetSimulator()" class="text-xs text-slate-400 hover:text-slate-200 flex items-center space-x-1">
+                <i class="fa-solid fa-rotate-left"></i>
+                <span>Réinitialiser</span>
+              </button>
+            </div>
+
+            <!-- Inputs Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-5">
+              
+              <!-- Nom du véhicule -->
+              <div class="md:col-span-2">
+                <label class="block text-xs font-semibold text-slate-300 mb-1">Véhicule (Marque, Modèle & Finition)</label>
+                <div class="relative">
+                  <span class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-500">
+                    <i class="fa-solid fa-car"></i>
+                  </span>
+                  <input type="text" id="sim-model" value="Volkswagen Tiguan 2.0 TDI 150 DSG7 R-Line" 
+                    class="w-full pl-9 pr-3 py-2 bg-slate-800/80 border border-slate-700 rounded-xl text-sm text-white focus:ring-2 focus:ring-brand-500 focus:outline-none transition">
+                </div>
+              </div>
+
+              <!-- Date de 1ère immatriculation (Année / Mois) -->
+              <div>
+                <label class="block text-xs font-semibold text-slate-300 mb-1">Date 1ère Immatriculation</label>
+                <input type="month" id="sim-reg-date" value="2021-06" onchange="runSimulation()"
+                  class="w-full px-3 py-2 bg-slate-800/80 border border-slate-700 rounded-xl text-sm text-white focus:ring-2 focus:ring-brand-500 focus:outline-none transition">
+                <span class="text-[10px] text-slate-400 mt-1 block">Détermine la décote du malus écologique & la TVA.</span>
+              </div>
+
+              <!-- Kilométrage -->
+              <div>
+                <label class="block text-xs font-semibold text-slate-300 mb-1">Kilométrage (km)</label>
+                <div class="relative">
+                  <input type="number" id="sim-km" value="68000" min="0" step="1000" oninput="runSimulation()"
+                    class="w-full px-3 py-2 bg-slate-800/80 border border-slate-700 rounded-xl text-sm text-white focus:ring-2 focus:ring-brand-500 focus:outline-none transition font-mono">
+                  <span class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-slate-400 text-xs">km</span>
+                </div>
+                <span id="tva-status-pill" class="text-[10px] mt-1 inline-block font-medium"></span>
+              </div>
+
+              <!-- CO2 g/km -->
+              <div>
+                <label class="block text-xs font-semibold text-slate-300 mb-1">Émissions CO2 (WLTP / NEDC)</label>
+                <div class="relative">
+                  <input type="number" id="sim-co2" value="142" min="0" max="400" oninput="runSimulation()"
+                    class="w-full px-3 py-2 bg-slate-800/80 border border-slate-700 rounded-xl text-sm text-white focus:ring-2 focus:ring-brand-500 focus:outline-none transition font-mono">
+                  <span class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-slate-400 text-xs">g/km</span>
+                </div>
+                <span class="text-[10px] text-slate-400 mt-1 block">Barème malus à la date de 1ère immat.</span>
+              </div>
+
+              <!-- Carburant -->
+              <div>
+                <label class="block text-xs font-semibold text-slate-300 mb-1">Motorisation / Énergie</label>
+                <select id="sim-fuel" onchange="runSimulation()" class="w-full px-3 py-2 bg-slate-800/80 border border-slate-700 rounded-xl text-sm text-white focus:ring-2 focus:ring-brand-500 focus:outline-none transition">
+                  <option value="diesel">Diesel</option>
+                  <option value="essence">Essence</option>
+                  <option value="hybrid">Hybride non rechargeable</option>
+                  <option value="phev">Hybride Rechargeable (PHEV)</option>
+                  <option value="electric">100% Électrique (0 malus)</option>
+                </select>
+              </div>
+
+              <!-- Prix d'achat Allemagne -->
+              <div>
+                <label class="block text-xs font-semibold text-slate-300 mb-1">Prix d'Achat en Allemagne (DE)</label>
+                <div class="relative">
+                  <input type="number" id="sim-buy-price" value="24900" step="100" oninput="runSimulation()"
+                    class="w-full pl-7 pr-3 py-2 bg-slate-800/80 border border-slate-700 rounded-xl text-sm text-white focus:ring-2 focus:ring-brand-500 focus:outline-none transition font-mono font-bold">
+                  <span class="absolute inset-y-0 left-0 pl-2.5 flex items-center pointer-events-none text-slate-400 text-sm">€</span>
+                </div>
+                <div class="flex items-center space-x-2 mt-1">
+                  <label class="text-[11px] text-slate-400 flex items-center cursor-pointer">
+                    <input type="checkbox" id="sim-vat-deductible" onchange="runSimulation()" class="rounded bg-slate-800 border-slate-700 text-brand-500 mr-1.5 focus:ring-0">
+                    MwSt. ausweisbar (TVA déductible)
+                  </label>
+                </div>
+              </div>
+
+              <!-- Prix de Revente France -->
+              <div>
+                <label class="block text-xs font-semibold text-slate-300 mb-1">Prix de Revente Estimé (FR)</label>
+                <div class="relative">
+                  <input type="number" id="sim-sell-price" value="29900" step="100" oninput="runSimulation()"
+                    class="w-full pl-7 pr-3 py-2 bg-slate-800/80 border border-slate-700 rounded-xl text-sm text-white focus:ring-2 focus:ring-emerald-500 focus:outline-none transition font-mono font-bold text-emerald-400">
+                  <span class="absolute inset-y-0 left-0 pl-2.5 flex items-center pointer-events-none text-slate-400 text-sm">€</span>
+                </div>
+                <span class="text-[10px] text-slate-400 mt-1 block">Prix moyen observé sur Leboncoin / La Centrale.</span>
+              </div>
+
+            </div>
+
+            <!-- Frais logistiques et administratifs -->
+            <div class="mt-6 pt-5 border-t border-slate-800">
+              <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3 flex items-center justify-between">
+                <span>Logistique & Frais d'Immatriculation</span>
+                <span class="text-[11px] text-brand-400 font-normal cursor-pointer hover:underline" onclick="toggleAdvancedFees()">
+                  <i class="fa-solid fa-gear mr-1"></i>Ajuster les frais
+                </span>
+              </h3>
+
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <!-- Mode de transport -->
+                <div>
+                  <label class="block text-xs font-medium text-slate-300 mb-1">Rapatriement du véhicule</label>
+                  <select id="sim-transport-mode" onchange="updateTransportCost()" class="w-full px-3 py-2 bg-slate-800/80 border border-slate-700 rounded-xl text-sm text-white focus:ring-2 focus:ring-brand-500 focus:outline-none transition">
+                    <option value="truck">Camion transporteur dédié (850 €)</option>
+                    <option value="road">Par la route (Plaques transit + Assurance + Carburant/Péages) (480 €)</option>
+                    <option value="custom">Frais personnalisés</option>
+                  </select>
+                </div>
+
+                <!-- Coût transport -->
+                <div>
+                  <label class="block text-xs font-medium text-slate-300 mb-1">Frais de Transport (€)</label>
+                  <input type="number" id="sim-transport-cost" value="850" min="0" oninput="runSimulation()"
+                    class="w-full px-3 py-2 bg-slate-800/80 border border-slate-700 rounded-xl text-sm text-white focus:ring-2 focus:ring-brand-500 focus:outline-none transition font-mono">
+                </div>
+              </div>
+
+              <!-- Collapsible Fees Breakdown -->
+              <div id="fees-advanced-panel" class="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-4 pt-3 bg-slate-950/40 p-3 rounded-xl border border-slate-800">
+                <div>
+                  <label class="block text-[11px] text-slate-400 mb-1">COC (Certificat)</label>
+                  <input type="number" id="fee-coc" value="200" oninput="runSimulation()" class="w-full px-2 py-1.5 bg-slate-800 border border-slate-700 rounded-lg text-xs font-mono text-white">
+                </div>
+                <div>
+                  <label class="block text-[11px] text-slate-400 mb-1">Contrôle Tech. FR</label>
+                  <input type="number" id="fee-ct" value="85" oninput="runSimulation()" class="w-full px-2 py-1.5 bg-slate-800 border border-slate-700 rounded-lg text-xs font-mono text-white">
+                </div>
+                <div>
+                  <label class="block text-[11px] text-slate-400 mb-1">Plaques / WW Prov.</label>
+                  <input type="number" id="fee-ww" value="50" oninput="runSimulation()" class="w-full px-2 py-1.5 bg-slate-800 border border-slate-700 rounded-lg text-xs font-mono text-white">
+                </div>
+                <div>
+                  <label class="block text-[11px] text-slate-400 mb-1">Prépa & Nettoyage</label>
+                  <input type="number" id="fee-prep" value="150" oninput="runSimulation()" class="w-full px-2 py-1.5 bg-slate-800 border border-slate-700 rounded-lg text-xs font-mono text-white">
+                </div>
+              </div>
+            </div>
+
+            <!-- Action buttons -->
+            <div class="mt-6 flex flex-wrap gap-3">
+              <button onclick="saveSimulatedDealToPipeline()" class="flex-1 py-3 px-4 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-bold text-sm shadow-lg shadow-emerald-600/20 transition-all flex items-center justify-center space-x-2">
+                <i class="fa-solid fa-folder-plus"></i>
+                <span>Enregistrer ce Deal dans le Pipeline</span>
+              </button>
+              <button onclick="openGermanEmailModalWithCurrent()" class="py-3 px-4 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 text-sm font-semibold transition-all flex items-center space-x-2">
+                <i class="fa-solid fa-envelope"></i>
+                <span>Contacter le garage</span>
+              </button>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Profitability & Breakdown Column (Right: 5 cols) -->
+        <div class="lg:col-span-5 space-y-6">
+
+          <!-- Margin Hero Badge -->
+          <div class="bg-gradient-to-br from-slate-900 via-slate-900 to-slate-800 border border-slate-800 rounded-2xl p-6 shadow-xl relative overflow-hidden">
+            <div class="absolute -right-6 -bottom-6 w-32 h-32 bg-emerald-500/10 rounded-full blur-2xl pointer-events-none"></div>
+
+            <div class="flex items-center justify-between">
+              <span class="text-xs uppercase font-bold tracking-wider text-slate-400">Marge Nette Projetée</span>
+              <span id="profit-badge" class="px-2.5 py-1 rounded-full text-xs font-extrabold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
+                EXCELLENT DEAL
+              </span>
+            </div>
+
+            <div class="mt-3 flex items-baseline space-x-3">
+              <span id="res-margin" class="text-4xl font-extrabold font-mono text-emerald-400">+3 265 €</span>
+              <span id="res-roi" class="text-base font-semibold text-slate-300 font-mono">(ROI: 12.3%)</span>
+            </div>
+
+            <p class="text-xs text-slate-400 mt-2">Bénéfice estimé net de taxes d'importation et de frais de remise en état.</p>
+
+            <!-- Key Indicators Bar -->
+            <div class="grid grid-cols-2 gap-3 mt-5 pt-4 border-t border-slate-800/80">
+              <div class="bg-slate-800/50 p-2.5 rounded-xl border border-slate-800">
+                <span class="text-[11px] text-slate-400 block">Prix de Revient Total (PRT)</span>
+                <span id="res-prt" class="text-sm font-bold font-mono text-white">26 635 €</span>
+              </div>
+              <div class="bg-slate-800/50 p-2.5 rounded-xl border border-slate-800">
+                <span class="text-[11px] text-slate-400 block">Malus CO2 Résiduel FR</span>
+                <span id="res-malus" class="text-sm font-bold font-mono text-amber-400">485 €</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Cost Breakdown Chart -->
+          <div class="bg-slate-900/90 border border-slate-800 rounded-2xl p-5 shadow-xl">
+            <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-4 flex items-center justify-between">
+              <span>Décomposition Financière de la Vente</span>
+              <span class="text-[11px] text-slate-500">100% Prix de revente FR</span>
+            </h3>
+
+            <div class="h-48 relative flex items-center justify-center">
+              <canvas id="costChart"></canvas>
+            </div>
+
+            <!-- Breakdown list details -->
+            <div class="mt-4 space-y-2 text-xs">
+              <div class="flex justify-between items-center py-1 border-b border-slate-800/60">
+                <span class="flex items-center text-slate-300">
+                  <span class="w-2.5 h-2.5 rounded-full bg-blue-500 mr-2"></span>
+                  Prix d'achat Allemagne
+                </span>
+                <span id="row-buy-price" class="font-mono font-medium text-slate-200">24 900 €</span>
+              </div>
+              <div class="flex justify-between items-center py-1 border-b border-slate-800/60">
+                <span class="flex items-center text-slate-300">
+                  <span class="w-2.5 h-2.5 rounded-full bg-amber-500 mr-2"></span>
+                  Malus Écologique résiduel
+                </span>
+                <span id="row-malus" class="font-mono font-medium text-amber-400">485 €</span>
+              </div>
+              <div class="flex justify-between items-center py-1 border-b border-slate-800/60">
+                <span class="flex items-center text-slate-300">
+                  <span class="w-2.5 h-2.5 rounded-full bg-indigo-500 mr-2"></span>
+                  Transport (Allemagne ➔ France)
+                </span>
+                <span id="row-transport" class="font-mono font-medium text-slate-200">850 €</span>
+              </div>
+              <div class="flex justify-between items-center py-1 border-b border-slate-800/60">
+                <span class="flex items-center text-slate-300">
+                  <span class="w-2.5 h-2.5 rounded-full bg-slate-400 mr-2"></span>
+                  Frais administratifs & Prépa (COC, CT, WW)
+                </span>
+                <span id="row-admin-fees" class="font-mono font-medium text-slate-200">485 €</span>
+              </div>
+              <div class="flex justify-between items-center py-1 border-b border-slate-800/60" id="row-vat-box" style="display:none;">
+                <span class="flex items-center text-red-400 font-semibold">
+                  <span class="w-2.5 h-2.5 rounded-full bg-red-500 mr-2"></span>
+                  TVA 20% Véhicule Récent (&lt; 6 mois/6000km)
+                </span>
+                <span id="row-vat" class="font-mono font-medium text-red-400">0 €</span>
+              </div>
+              <div class="flex justify-between items-center py-1.5 font-bold text-emerald-400 pt-2">
+                <span class="flex items-center">
+                  <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 mr-2"></span>
+                  Marge Nette Arbitrage
+                </span>
+                <span id="row-margin" class="font-mono text-sm">+3 265 €</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Explanatory note on CO2 discount rule -->
+          <div class="bg-brand-950/20 border border-brand-800/30 rounded-xl p-3.5 text-xs text-slate-300 space-y-1">
+            <div class="flex items-center space-x-1.5 font-semibold text-brand-400">
+              <i class="fa-solid fa-scale-balanced"></i>
+              <span>Règle légale du Malus CO2 d'occasion</span>
+            </div>
+            <p class="text-[11px] text-slate-400 leading-relaxed">
+              Le malus appliqué à l'importation est le barème officiel français de l'année de 1ère immatriculation, diminué d'une <strong>décote de 10% par an</strong> entamé (abattement officiel par tranche de 6 mois ou an). Véhicules de 10 ans et plus : <strong>0 € de malus</strong>.
+            </p>
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ========================================== -->
+    <!-- TAB 2 : RADAR D'ARBITRAGE (DEALS SOURCÉS) -->
+    <!-- ========================================== -->
+    <section id="tab-radar" class="tab-content hidden space-y-6">
+      <!-- Filter Bar -->
+      <div class="bg-slate-900/90 border border-slate-800 rounded-2xl p-4 shadow-lg flex flex-wrap gap-4 items-center justify-between">
+        <div class="flex flex-wrap items-center gap-3">
+          <!-- Marque Filter -->
+          <select id="radar-filter-brand" onchange="renderRadarDeals()" class="px-3 py-1.5 bg-slate-800 border border-slate-700 rounded-xl text-xs text-white focus:outline-none">
+            <option value="all">Toutes les marques</option>
+            <option value="Volkswagen">Volkswagen</option>
+            <option value="BMW">BMW</option>
+            <option value="Audi">Audi</option>
+            <option value="Mercedes-Benz">Mercedes-Benz</option>
+            <option value="Toyota">Toyota</option>
+            <option value="Porsche">Porsche</option>
+          </select>
+
+          <!-- Catégorie Filter -->
+          <select id="radar-filter-cat" onchange="renderRadarDeals()" class="px-3 py-1.5 bg-slate-800 border border-slate-700 rounded-xl text-xs text-white focus:outline-none">
+            <option value="all">Toutes catégories</option>
+            <option value="SUV">SUV</option>
+            <option value="Berline">Berline / Break</option>
+            <option value="Compacte">Compacte</option>
+          </select>
+
+          <!-- Marge Min Filter -->
+          <select id="radar-filter-margin" onchange="renderRadarDeals()" class="px-3 py-1.5 bg-slate-800 border border-slate-700 rounded-xl text-xs text-white focus:outline-none">
+            <option value="0">Toutes les marges</option>
+            <option value="2000">Marge &gt; 2 000 €</option>
+            <option value="3000">Marge &gt; 3 000 €</option>
+            <option value="4000">Marge &gt; 4 000 €</option>
+          </select>
+        </div>
+
+        <div class="text-xs text-slate-400">
+          <span id="radar-deals-count" class="font-bold text-white">6</span> opportunités sourcées en Allemagne
+        </div>
+      </div>
+
+      <!-- Deals Cards Grid -->
+      <div id="radar-deals-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <!-- Injected via JavaScript -->
+      </div>
+    </section>
+
+    <!-- ========================================== -->
+    <!-- TAB 3 : PIPELINE KANBAN (GESTION TRANSACTIONS) -->
+    <!-- ========================================== -->
+    <section id="tab-pipeline" class="tab-content hidden space-y-6">
+
+      <!-- Pipeline KPIs header -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4">
+          <div class="text-xs text-slate-400 uppercase font-medium">Véhicules en cours</div>
+          <div class="text-2xl font-bold font-mono text-white mt-1" id="pip-total-cars">0</div>
+        </div>
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4">
+          <div class="text-xs text-slate-400 uppercase font-medium">Capital Investi Mobilisé</div>
+          <div class="text-2xl font-bold font-mono text-brand-400 mt-1" id="pip-total-invest">0 €</div>
+        </div>
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4">
+          <div class="text-xs text-slate-400 uppercase font-medium">Bénéfice Net en Cours</div>
+          <div class="text-2xl font-bold font-mono text-emerald-400 mt-1" id="pip-total-profit">0 €</div>
+        </div>
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 flex items-center justify-between">
+          <div>
+            <div class="text-xs text-slate-400 uppercase font-medium">Ajout Rapide</div>
+            <div class="text-xs text-slate-300 mt-1">Nouveau véhicule au pipeline</div>
+          </div>
+          <button onclick="openAddVehicleModal()" class="w-10 h-10 rounded-xl bg-brand-600 hover:bg-brand-500 text-white flex items-center justify-center transition shadow-lg">
+            <i class="fa-solid fa-plus"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Kanban Columns Container -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-3.5 min-h-[550px] overflow-x-auto pb-4">
+        
+        <!-- Column 1: Prospection -->
+        <div class="bg-slate-900/70 border border-slate-800/80 rounded-2xl p-3 flex flex-col flex-1 min-w-[200px]">
+          <div class="flex items-center justify-between pb-2 mb-3 border-b border-slate-800 text-xs font-bold text-slate-300">
+            <span class="flex items-center space-x-1.5">
+              <span class="w-2 h-2 rounded-full bg-slate-400"></span>
+              <span>1. En Négociation</span>
+            </span>
+            <span id="count-stage-1" class="bg-slate-800 text-slate-400 px-1.5 py-0.5 rounded text-[10px]">0</span>
+          </div>
+          <div id="col-stage-1" class="kanban-dropzone flex-1 space-y-3" ondragover="allowDrop(event)" ondrop="drop(event, 1)"></div>
+        </div>
+
+        <!-- Column 2: Réservé -->
+        <div class="bg-slate-900/70 border border-slate-800/80 rounded-2xl p-3 flex flex-col flex-1 min-w-[200px]">
+          <div class="flex items-center justify-between pb-2 mb-3 border-b border-slate-800 text-xs font-bold text-amber-400">
+            <span class="flex items-center space-x-1.5">
+              <span class="w-2 h-2 rounded-full bg-amber-400"></span>
+              <span>2. Réservé / Acompte</span>
+            </span>
+            <span id="count-stage-2" class="bg-slate-800 text-amber-400 px-1.5 py-0.5 rounded text-[10px]">0</span>
+          </div>
+          <div id="col-stage-2" class="kanban-dropzone flex-1 space-y-3" ondragover="allowDrop(event)" ondrop="drop(event, 2)"></div>
+        </div>
+
+        <!-- Column 3: Rapatriement -->
+        <div class="bg-slate-900/70 border border-slate-800/80 rounded-2xl p-3 flex flex-col flex-1 min-w-[200px]">
+          <div class="flex items-center justify-between pb-2 mb-3 border-b border-slate-800 text-xs font-bold text-blue-400">
+            <span class="flex items-center space-x-1.5">
+              <span class="w-2 h-2 rounded-full bg-blue-400"></span>
+              <span>3. Rapatriement DE➔FR</span>
+            </span>
+            <span id="count-stage-3" class="bg-slate-800 text-blue-400 px-1.5 py-0.5 rounded text-[10px]">0</span>
+          </div>
+          <div id="col-stage-3" class="kanban-dropzone flex-1 space-y-3" ondragover="allowDrop(event)" ondrop="drop(event, 3)"></div>
+        </div>
+
+        <!-- Column 4: Quitus & CT -->
+        <div class="bg-slate-900/70 border border-slate-800/80 rounded-2xl p-3 flex flex-col flex-1 min-w-[200px]">
+          <div class="flex items-center justify-between pb-2 mb-3 border-b border-slate-800 text-xs font-bold text-purple-400">
+            <span class="flex items-center space-x-1.5">
+              <span class="w-2 h-2 rounded-full bg-purple-400"></span>
+              <span>4. Quitus Fiscal & CT</span>
+            </span>
+            <span id="count-stage-4" class="bg-slate-800 text-purple-400 px-1.5 py-0.5 rounded text-[10px]">0</span>
+          </div>
+          <div id="col-stage-4" class="kanban-dropzone flex-1 space-y-3" ondragover="allowDrop(event)" ondrop="drop(event, 4)"></div>
+        </div>
+
+        <!-- Column 5: En Vente -->
+        <div class="bg-slate-900/70 border border-slate-800/80 rounded-2xl p-3 flex flex-col flex-1 min-w-[200px]">
+          <div class="flex items-center justify-between pb-2 mb-3 border-b border-slate-800 text-xs font-bold text-teal-400">
+            <span class="flex items-center space-x-1.5">
+              <span class="w-2 h-2 rounded-full bg-teal-400"></span>
+              <span>5. En Vente en France</span>
+            </span>
+            <span id="count-stage-5" class="bg-slate-800 text-teal-400 px-1.5 py-0.5 rounded text-[10px]">0</span>
+          </div>
+          <div id="col-stage-5" class="kanban-dropzone flex-1 space-y-3" ondragover="allowDrop(event)" ondrop="drop(event, 5)"></div>
+        </div>
+
+        <!-- Column 6: Vendu -->
+        <div class="bg-slate-900/70 border border-slate-800/80 rounded-2xl p-3 flex flex-col flex-1 min-w-[200px]">
+          <div class="flex items-center justify-between pb-2 mb-3 border-b border-slate-800 text-xs font-bold text-emerald-400">
+            <span class="flex items-center space-x-1.5">
+              <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+              <span>6. Vendu (Encaissé)</span>
+            </span>
+            <span id="count-stage-6" class="bg-slate-800 text-emerald-400 px-1.5 py-0.5 rounded text-[10px]">0</span>
+          </div>
+          <div id="col-stage-6" class="kanban-dropzone flex-1 space-y-3" ondragover="allowDrop(event)" ondrop="drop(event, 6)"></div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ========================================== -->
+    <!-- TAB 4 : BOÎTE À OUTILS & CHECKLIST IMPORT -->
+    <!-- ========================================== -->
+    <section id="tab-outils" class="tab-content hidden space-y-6">
+
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+        <!-- Left: Interactive Import Checklist (7 cols) -->
+        <div class="lg:col-span-6 space-y-4">
+          <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-xl">
+            <div class="flex items-center justify-between pb-3 border-b border-slate-800 mb-4">
+              <div>
+                <h2 class="text-base font-bold text-white flex items-center space-x-2">
+                  <i class="fa-solid fa-list-check text-emerald-400"></i>
+                  <span>Checklist Administrative & Contrôle Terrain</span>
+                </h2>
+                <p class="text-xs text-slate-400">Procédure obligatoire sans faille avant de verser un acompte en Allemagne.</p>
+              </div>
+              <span id="checklist-progress-badge" class="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400 font-bold text-xs">
+                0 / 8 validés
+              </span>
+            </div>
+
+            <!-- Steps list -->
+            <div class="space-y-3 text-xs" id="checklist-container">
+              <!-- Item 1 -->
+              <label class="flex items-start space-x-3 p-2.5 rounded-xl bg-slate-800/40 border border-slate-800 hover:border-slate-700 cursor-pointer transition">
+                <input type="checkbox" onchange="updateChecklistProgress()" class="mt-0.5 rounded bg-slate-800 border-slate-700 text-brand-500 focus:ring-0">
+                <div>
+                  <span class="font-bold text-slate-200 block">1. Vérification VIN & Historique (CarVertical / AutoDNA)</span>
+                  <span class="text-slate-400 text-[11px]">Détecter kilométrage trafiqué, sinistres majeurs masqués ou gage financier.</span>
+                </div>
+              </label>
+
+              <!-- Item 2 -->
+              <label class="flex items-start space-x-3 p-2.5 rounded-xl bg-slate-800/40 border border-slate-800 hover:border-slate-700 cursor-pointer transition">
+                <input type="checkbox" onchange="updateChecklistProgress()" class="mt-0.5 rounded bg-slate-800 border-slate-700 text-brand-500 focus:ring-0">
+                <div>
+                  <span class="font-bold text-slate-200 block">2. Carte Grise Allemande Complète (2 Volets indispensables)</span>
+                  <span class="text-slate-400 text-[11px]"><strong>Zulassungsbescheinigung Teil I</strong> (circulation) + <strong>Teil II</strong> (Fahrzeugbrief - titre de propriété). Sans le Teil II, l'immatriculation en France est impossible !</span>
+                </div>
+              </label>
+
+              <!-- Item 3 -->
+              <label class="flex items-start space-x-3 p-2.5 rounded-xl bg-slate-800/40 border border-slate-800 hover:border-slate-700 cursor-pointer transition">
+                <input type="checkbox" onchange="updateChecklistProgress()" class="mt-0.5 rounded bg-slate-800 border-slate-700 text-brand-500 focus:ring-0">
+                <div>
+                  <span class="font-bold text-slate-200 block">3. COC - Certificat de Conformité Européen</span>
+                  <span class="text-slate-400 text-[11px]">Demander impérativement l'original au concessionnaire (économise 150 à 250 € chez le constructeur).</span>
+                </div>
+              </label>
+
+              <!-- Item 4 -->
+              <label class="flex items-start space-x-3 p-2.5 rounded-xl bg-slate-800/40 border border-slate-800 hover:border-slate-700 cursor-pointer transition">
+                <input type="checkbox" onchange="updateChecklistProgress()" class="mt-0.5 rounded bg-slate-800 border-slate-700 text-brand-500 focus:ring-0">
+                <div>
+                  <span class="font-bold text-slate-200 block">4. Contrat de Vente (Kaufvertrag) & Mentions Légales</span>
+                  <span class="text-slate-400 text-[11px]">Vérifier mention <em>Unfallfrei</em> (non accidenté) et clause TVA nette ou marge (€ / MwSt.).</span>
+                </div>
+              </label>
+
+              <!-- Item 5 -->
+              <label class="flex items-start space-x-3 p-2.5 rounded-xl bg-slate-800/40 border border-slate-800 hover:border-slate-700 cursor-pointer transition">
+                <input type="checkbox" onchange="updateChecklistProgress()" class="mt-0.5 rounded bg-slate-800 border-slate-700 text-brand-500 focus:ring-0">
+                <div>
+                  <span class="font-bold text-slate-200 block">5. Plaques de Transit (Ausfuhrkennzeichen / Kurzzeitkennzeichen)</span>
+                  <span class="text-slate-400 text-[11px]">Si retour par la route : plaques jaunes (5 jours) ou plaques rouges export (15-30 jours) avec assurance internationale valide.</span>
+                </div>
+              </label>
+
+              <!-- Item 6 -->
+              <label class="flex items-start space-x-3 p-2.5 rounded-xl bg-slate-800/40 border border-slate-800 hover:border-slate-700 cursor-pointer transition">
+                <input type="checkbox" onchange="updateChecklistProgress()" class="mt-0.5 rounded bg-slate-800 border-slate-700 text-brand-500 focus:ring-0">
+                <div>
+                  <span class="font-bold text-slate-200 block">6. Quitus Fiscal en France (SIE ou Impôts en ligne)</span>
+                  <span class="text-slate-400 text-[11px]">Certificat 1993 REC prouvant la situation fiscale en règle en France (gratuit si véhicule d'occasion &gt; 6 mois et &gt; 6 000 km).</span>
+                </div>
+              </label>
+
+              <!-- Item 7 -->
+              <label class="flex items-start space-x-3 p-2.5 rounded-xl bg-slate-800/40 border border-slate-800 hover:border-slate-700 cursor-pointer transition">
+                <input type="checkbox" onchange="updateChecklistProgress()" class="mt-0.5 rounded bg-slate-800 border-slate-700 text-brand-500 focus:ring-0">
+                <div>
+                  <span class="font-bold text-slate-200 block">7. Contrôle Technique Français</span>
+                  <span class="text-slate-400 text-[11px]">Obligatoire pour les véhicules de plus de 4 ans (sauf si contrôle allemand TÜV/DEKRA de moins de 6 mois encore valide).</span>
+                </div>
+              </label>
+
+              <!-- Item 8 -->
+              <label class="flex items-start space-x-3 p-2.5 rounded-xl bg-slate-800/40 border border-slate-800 hover:border-slate-700 cursor-pointer transition">
+                <input type="checkbox" onchange="updateChecklistProgress()" class="mt-0.5 rounded bg-slate-800 border-slate-700 text-brand-500 focus:ring-0">
+                <div>
+                  <span class="font-bold text-slate-200 block">8. Immatriculation Définitive ANTS (ou Immatriculation Provisoire WW)</span>
+                  <span class="text-slate-400 text-[11px]">Le certificat WW (valide 4 mois) permet de rouler et de vendre immédiatement le véhicule pendant l'instruction ANTS.</span>
+                </div>
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: German Dealer Email Generator (6 cols) -->
+        <div class="lg:col-span-6 space-y-4">
+          <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-xl">
+            <div class="flex items-center justify-between pb-3 border-b border-slate-800 mb-4">
+              <div>
+                <h2 class="text-base font-bold text-white flex items-center space-x-2">
+                  <i class="fa-solid fa-file-signature text-brand-400"></i>
+                  <span>Générateur d'Email Concessionnaire Allemand</span>
+                </h2>
+                <p class="text-xs text-slate-400">Créez en 1 clic un message pro en allemand parfait pour poser toutes les questions cruciales.</p>
+              </div>
+            </div>
+
+            <!-- Email options builder -->
+            <div class="space-y-3">
+              <div class="grid grid-cols-2 gap-3">
+                <div>
+                  <label class="block text-[11px] font-medium text-slate-300 mb-1">Nom du Vendeur / Garage</label>
+                  <input type="text" id="email-dealer-name" value="Autohaus Müller GmbH" class="w-full px-2.5 py-1.5 bg-slate-800 border border-slate-700 rounded-lg text-xs text-white">
+                </div>
+                <div>
+                  <label class="block text-[11px] font-medium text-slate-300 mb-1">Modèle du Véhicule</label>
+                  <input type="text" id="email-car-model" value="VW Tiguan 2.0 TDI R-Line" class="w-full px-2.5 py-1.5 bg-slate-800 border border-slate-700 rounded-lg text-xs text-white">
+                </div>
+              </div>
+
+              <div class="grid grid-cols-2 gap-3">
+                <div>
+                  <label class="block text-[11px] font-medium text-slate-300 mb-1">Prix affiché (€)</label>
+                  <input type="number" id="email-price" value="24900" class="w-full px-2.5 py-1.5 bg-slate-800 border border-slate-700 rounded-lg text-xs text-white font-mono">
+                </div>
+                <div>
+                  <label class="block text-[11px] font-medium text-slate-300 mb-1">Offre proposée (€, optionnel)</label>
+                  <input type="number" id="email-offer" value="24000" placeholder="Ex: 24000" class="w-full px-2.5 py-1.5 bg-slate-800 border border-slate-700 rounded-lg text-xs text-white font-mono">
+                </div>
+              </div>
+
+              <!-- Options to ask -->
+              <div class="pt-2">
+                <span class="block text-[11px] font-semibold text-slate-300 mb-2">Points à inclure automatiquement dans l'email :</span>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-[11px] text-slate-300">
+                  <label class="flex items-center space-x-2">
+                    <input type="checkbox" id="chk-ask-coc" checked onchange="generateGermanEmail()" class="rounded bg-slate-800 text-brand-500 border-slate-700 focus:ring-0">
+                    <span>Présence COC original</span>
+                  </label>
+                  <label class="flex items-center space-x-2">
+                    <input type="checkbox" id="chk-ask-tva" checked onchange="generateGermanEmail()" class="rounded bg-slate-800 text-brand-500 border-slate-700 focus:ring-0">
+                    <span>Régime TVA (MwSt.)</span>
+                  </label>
+                  <label class="flex items-center space-x-2">
+                    <input type="checkbox" id="chk-ask-unfall" checked onchange="generateGermanEmail()" class="rounded bg-slate-800 text-brand-500 border-slate-700 focus:ring-0">
+                    <span>Non accidenté (Unfallfrei)</span>
+                  </label>
+                  <label class="flex items-center space-x-2">
+                    <input type="checkbox" id="chk-ask-docs" checked onchange="generateGermanEmail()" class="rounded bg-slate-800 text-brand-500 border-slate-700 focus:ring-0">
+                    <span>Teil I & Teil II disponibles</span>
+                  </label>
+                </div>
+              </div>
+
+              <!-- Generated German Text Area with Copy Button -->
+              <div class="pt-2">
+                <div class="flex items-center justify-between mb-1">
+                  <span class="text-xs font-semibold text-slate-300">Email en Allemand (prêt à envoyer)</span>
+                  <button onclick="copyGeneratedEmail()" class="text-xs text-brand-400 hover:text-brand-300 font-medium flex items-center space-x-1">
+                    <i class="fa-solid fa-copy"></i>
+                    <span>Copier le texte</span>
+                  </button>
+                </div>
+                <textarea id="email-output-de" rows="7" readonly class="w-full p-3 bg-slate-950 border border-slate-800 rounded-xl text-xs text-emerald-400 font-mono focus:outline-none resize-none leading-relaxed"></textarea>
+              </div>
+
+              <!-- French Translation Reference -->
+              <div>
+                <span class="text-[11px] font-semibold text-slate-400 block mb-1">Traduction en français de contrôle :</span>
+                <div id="email-output-fr" class="p-2.5 bg-slate-950/60 border border-slate-800/80 rounded-xl text-[11px] text-slate-400 italic max-h-28 overflow-y-auto leading-normal"></div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- Modal: Ajouter / Éditer Véhicule dans Pipeline -->
+  <div id="vehicle-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm hidden">
+    <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-md w-full p-6 shadow-2xl space-y-4">
+      <div class="flex items-center justify-between pb-3 border-b border-slate-800">
+        <h3 class="font-bold text-white text-base">Ajouter un Véhicule au Suivi</h3>
+        <button onclick="closeVehicleModal()" class="text-slate-400 hover:text-white">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <div class="space-y-3 text-xs">
+        <div>
+          <label class="block font-medium text-slate-300 mb-1">Marque, Modèle & Finition</label>
+          <input type="text" id="modal-model" placeholder="Ex: BMW 320d Touring M Sport" class="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-xl text-white">
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block font-medium text-slate-300 mb-1">Prix d'Achat DE (€)</label>
+            <input type="number" id="modal-buy" value="22000" class="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-xl text-white font-mono">
+          </div>
+          <div>
+            <label class="block font-medium text-slate-300 mb-1">Revente Estimée FR (€)</label>
+            <input type="number" id="modal-sell" value="26500" class="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-xl text-white font-mono text-emerald-400">
+          </div>
+        </div>
+        <div>
+          <label class="block font-medium text-slate-300 mb-1">Étape initiale du pipeline</label>
+          <select id="modal-stage" class="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-xl text-white">
+            <option value="1">1. En Négociation / Prospection</option>
+            <option value="2">2. Réservé / Acompte versé</option>
+            <option value="3">3. Rapatriement en cours</option>
+            <option value="4">4. Démarches Quitus & CT</option>
+            <option value="5">5. En vente en France</option>
+            <option value="6">6. Vendu (Encaissé)</option>
+          </select>
+        </div>
+        <div>
+          <label class="block font-medium text-slate-300 mb-1">Notes / Numéro d'annonce Mobile.de</label>
+          <input type="text" id="modal-notes" placeholder="Garage Autohaus Berlin - Dossier complet" class="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-xl text-white">
+        </div>
+      </div>
+
+      <div class="flex justify-end space-x-2 pt-2">
+        <button onclick="closeVehicleModal()" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 rounded-xl text-xs font-semibold text-slate-300">Annuler</button>
+        <button onclick="saveVehicleFromModal()" class="px-4 py-2 bg-brand-600 hover:bg-brand-500 rounded-xl text-xs font-bold text-white">Enregistrer</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- JavaScript Application Engine -->
+  <script>
+    /* Default Deals for the Radar */
+    const SAMPLE_RADAR_DEALS = [
+      {
+        id: "deal-1",
+        brand: "Volkswagen",
+        model: "VW Tiguan 2.0 TDI 150 DSG7 R-Line",
+        category: "SUV",
+        year: 2021,
+        month: "2021-06",
+        km: 68000,
+        fuel: "diesel",
+        co2: 142,
+        priceDE: 24900,
+        priceFR: 29800,
+        mobileUrl: "https://www.mobile.de",
+        image: "https://images.unsplash.com/photo-1541899481282-d53bffe3c35d?auto=format&fit=crop&w=600&q=80",
+        rating: 5,
+        dealer: "Autohaus Bayern - Munich",
+        tvaDeductible: true
+      },
+      {
+        id: "deal-2",
+        brand: "BMW",
+        model: "BMW 320d Touring M Sport xDrive Auto",
+        category: "Berline",
+        year: 2020,
+        month: "2020-09",
+        km: 84000,
+        fuel: "diesel",
+        co2: 138,
+        priceDE: 22800,
+        priceFR: 27900,
+        mobileUrl: "https://www.mobile.de",
+        image: "https://images.unsplash.com/photo-1555215695-3004980ad54e?auto=format&fit=crop&w=600&q=80",
+        rating: 5,
+        dealer: "BMW Niederlassung Stuttgart",
+        tvaDeductible: false
+      },
+      {
+        id: "deal-3",
+        brand: "Audi",
+        model: "Audi Q3 35 TFSI 150 S-Line S tronic",
+        category: "SUV",
+        year: 2022,
+        month: "2022-03",
+        km: 39000,
+        fuel: "essence",
+        co2: 149,
+        priceDE: 28400,
+        priceFR: 33500,
+        mobileUrl: "https://www.mobile.de",
+        image: "https://images.unsplash.com/photo-1606664515524-ed2f786a0bd6?auto=format&fit=crop&w=600&q=80",
+        rating: 4,
+        dealer: "Audi Zentrum Frankfurt",
+        tvaDeductible: true
+      },
+      {
+        id: "deal-4",
+        brand: "Mercedes-Benz",
+        model: "Mercedes-Benz A 200 AMG Line 7G-DCT",
+        category: "Compacte",
+        year: 2021,
+        month: "2021-11",
+        km: 52000,
+        fuel: "essence",
+        co2: 134,
+        priceDE: 23200,
+        priceFR: 27600,
+        mobileUrl: "https://www.mobile.de",
+        image: "https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?auto=format&fit=crop&w=600&q=80",
+        rating: 5,
+        dealer: "SternPartner Hamburg",
+        tvaDeductible: false
+      },
+      {
+        id: "deal-5",
+        brand: "Toyota",
+        model: "Toyota RAV4 Hybride 218ch Dynamic AWD",
+        category: "SUV",
+        year: 2020,
+        month: "2020-04",
+        km: 71000,
+        fuel: "hybrid",
+        co2: 126,
+        priceDE: 21500,
+        priceFR: 25800,
+        mobileUrl: "https://www.mobile.de",
+        image: "https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?auto=format&fit=crop&w=600&q=80",
+        rating: 4,
+        dealer: "Köln Automobile",
+        tvaDeductible: true
+      },
+      {
+        id: "deal-6",
+        brand: "Porsche",
+        model: "Porsche Macan 2.0T 245ch PDK",
+        category: "SUV",
+        year: 2019,
+        month: "2019-07",
+        km: 92000,
+        fuel: "essence",
+        co2: 185,
+        priceDE: 41500,
+        priceFR: 49900,
+        mobileUrl: "https://www.mobile.de",
+        image: "https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=600&q=80",
+        rating: 5,
+        dealer: "Porsche Zentrum Hannover",
+        tvaDeductible: false
+      }
+    ];
+
+    /* Sample Pipeline Initial Data */
+    const DEFAULT_PIPELINE = [
+      {
+        id: "pip-1",
+        model: "VW Tiguan 2.0 TDI R-Line 2021",
+        stage: 1, // En négo
+        buyPrice: 24900,
+        sellPrice: 29800,
+        margin: 3150,
+        notes: "Dossier COC demandé au vendeur Herr Schmidt"
+      },
+      {
+        id: "pip-2",
+        model: "BMW 320d Touring M Sport 2020",
+        stage: 3, // Rapatriement
+        buyPrice: 22800,
+        sellPrice: 27900,
+        margin: 3480,
+        notes: "Transporteur routier en route. Arrivée prévue jeudi."
+      },
+      {
+        id: "pip-3",
+        model: "Mercedes A 200 AMG Line 2021",
+        stage: 5, // En vente FR
+        buyPrice: 23200,
+        sellPrice: 27600,
+        margin: 2650,
+        notes: "Annonce en ligne sur Leboncoin & La Centrale"
+      }
+    ];
+
+    let pipelineVehicles = [];
+    let costChartInstance = null;
+
+    window.addEventListener('DOMContentLoaded', () => {
+      // Load pipeline from localStorage or defaults
+      const savedPipeline = localStorage.getItem('auto_pipeline_v1');
+      if (savedPipeline) {
+        try {
+          pipelineVehicles = JSON.parse(savedPipeline);
+        } catch (e) {
+          pipelineVehicles = DEFAULT_PIPELINE;
+        }
+      } else {
+        pipelineVehicles = DEFAULT_PIPELINE;
+        savePipelineToStorage();
+      }
+
+      // Initialize UI & components
+      initChart();
+      runSimulation();
+      renderRadarDeals();
+      renderPipelineBoard();
+      generateGermanEmail();
+      loadChecklistState();
+    });
+
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+      document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.classList.remove('active', 'border-brand-500', 'text-brand-400');
+        btn.classList.add('border-transparent', 'text-slate-400');
+      });
+
+      const activeSection = document.getElementById('tab-' + tabId);
+      const activeBtn = document.getElementById('tab-btn-' + tabId);
+      if (activeSection) activeSection.classList.remove('hidden');
+      if (activeBtn) {
+        activeBtn.classList.add('active', 'border-brand-500', 'text-brand-400');
+        activeBtn.classList.remove('border-transparent', 'text-slate-400');
+      }
+
+      if (tabId === 'simulateur' && costChartInstance) {
+        costChartInstance.resize();
+      }
+    }
+
+    /**
+     * Official French CO2 Malus estimation with time depreciation:
+     * - Uses registration year benchmark
+     * - Applies 10% legal discount per full year or fraction
+     * - Over 10 years old: 100% exempt (0 €)
+     */
+    function calculateResidualMalus(regDateStr, co2, fuelType) {
+      if (fuelType === 'electric') return 0;
+      if (!regDateStr || co2 <= 0) return 0;
+
+      const regDate = new Date(regDateStr + "-01");
+      const now = new Date();
+      
+      // Calculate age in months and years
+      const diffTime = Math.max(0, now - regDate);
+      const diffDays = diffTime / (1000 * 60 * 60 * 24);
+      const diffMonths = diffDays / 30.4375;
+      const diffYears = diffMonths / 12;
+
+      // Rule: 10 years or older = exempt
+      if (diffYears >= 10) return 0;
+
+      const regYear = regDate.getFullYear();
+
+      // Baseline malus table based on registration year scale (approximate official scale)
+      let baseMalus = 0;
+      if (regYear <= 2019) {
+        if (co2 > 119) baseMalus = Math.min(10500, Math.pow(co2 - 119, 1.8) * 4);
+      } else if (regYear === 2020) {
+        if (co2 > 137) baseMalus = Math.min(20000, Math.pow(co2 - 137, 1.85) * 8);
+      } else if (regYear === 2021) {
+        if (co2 > 132) baseMalus = Math.min(30000, Math.pow(co2 - 132, 1.9) * 12);
+      } else if (regYear === 2022) {
+        if (co2 > 127) baseMalus = Math.min(40000, Math.pow(co2 - 127, 1.92) * 16);
+      } else { // 2023 and onwards
+        if (co2 > 122) baseMalus = Math.min(50000, Math.pow(co2 - 122, 1.95) * 22);
+      }
+
+      // PHEV rebate
+      if (fuelType === 'phev') {
+        baseMalus = 0; // Most PHEVs with >50km electric range had 0 malus
+      }
+
+      // Depreciation formula: 10% discount per year or 0.83% per month
+      const discountRatio = Math.min(1.0, (Math.floor(diffMonths) / 12) * 0.10);
+      const residualMalus = Math.max(0, Math.round(baseMalus * (1 - discountRatio)));
+
+      return residualMalus;
+    }
+
+    function runSimulation() {
+      const buyPrice = parseFloat(document.getElementById('sim-buy-price').value) || 0;
+      const sellPrice = parseFloat(document.getElementById('sim-sell-price').value) || 0;
+      const km = parseFloat(document.getElementById('sim-km').value) || 0;
+      const regDate = document.getElementById('sim-reg-date').value;
+      const co2 = parseFloat(document.getElementById('sim-co2').value) || 0;
+      const fuel = document.getElementById('sim-fuel').value;
+      const transportCost = parseFloat(document.getElementById('sim-transport-cost').value) || 0;
+
+      // Fees
+      const feeCoc = parseFloat(document.getElementById('fee-coc').value) || 0;
+      const feeCt = parseFloat(document.getElementById('fee-ct').value) || 0;
+      const feeWw = parseFloat(document.getElementById('fee-ww').value) || 0;
+      const feePrep = parseFloat(document.getElementById('fee-prep').value) || 0;
+      const totalAdminFees = feeCoc + feeCt + feeWw + feePrep;
+
+      // Tax VAT Rule (TVA Véhicule Neuf vs Occasion)
+      // > 6 months AND > 6000 km = Occasion fiscale
+      const regObj = new Date(regDate + "-01");
+      const ageMonths = (new Date() - regObj) / (1000 * 60 * 60 * 24 * 30.4375);
+      const isFiscalOccasion = (ageMonths >= 6 && km >= 6000);
+      
+      const tvaStatusPill = document.getElementById('tva-status-pill');
+      let frenchVatToAdd = 0;
+
+      if (isFiscalOccasion) {
+        tvaStatusPill.className = "text-[10px] mt-1 inline-block font-semibold text-emerald-400";
+        tvaStatusPill.innerHTML = '<i class="fa-solid fa-check mr-1"></i>Occasion fiscale (0% TVA FR additionnelle)';
+        document.getElementById('row-vat-box').style.display = 'none';
+      } else {
+        tvaStatusPill.className = "text-[10px] mt-1 inline-block font-bold text-red-400";
+        tvaStatusPill.innerHTML = '<i class="fa-solid fa-triangle-exclamation mr-1"></i>Fiscalement Neuf (&lt;6 mois ou &lt;6k km) : TVA FR 20% due !';
+        frenchVatToAdd = Math.round(buyPrice * 0.20);
+        document.getElementById('row-vat-box').style.display = 'flex';
+        document.getElementById('row-vat').textContent = `+${frenchVatToAdd.toLocaleString('fr-FR')} €`;
+      }
+
+      // CO2 Malus
+      const malus = calculateResidualMalus(regDate, co2, fuel);
+
+      // Cost Calculation
+      const totalCost = buyPrice + malus + transportCost + totalAdminFees + frenchVatToAdd;
+      const netMargin = sellPrice - totalCost;
+      const roiPercent = totalCost > 0 ? ((netMargin / totalCost) * 100).toFixed(1) : 0;
+
+      // Update UI results
+      const resMarginEl = document.getElementById('res-margin');
+      resMarginEl.textContent = `${netMargin >= 0 ? '+' : ''}${Math.round(netMargin).toLocaleString('fr-FR')} €`;
+      resMarginEl.className = `text-4xl font-extrabold font-mono ${netMargin >= 0 ? 'text-emerald-400' : 'text-red-400'}`;
+
+      document.getElementById('res-roi').textContent = `(ROI: ${roiPercent}%)`;
+      document.getElementById('res-prt').textContent = `${Math.round(totalCost).toLocaleString('fr-FR')} €`;
+      document.getElementById('res-malus').textContent = `${malus.toLocaleString('fr-FR')} €`;
+
+      // Update Profit Badge
+      const profitBadge = document.getElementById('profit-badge');
+      if (netMargin > 3000) {
+        profitBadge.className = "px-2.5 py-1 rounded-full text-xs font-extrabold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30";
+        profitBadge.textContent = "SUPER DEAL (MARGE ÉLEVÉE)";
+      } else if (netMargin > 1500) {
+        profitBadge.className = "px-2.5 py-1 rounded-full text-xs font-extrabold bg-brand-500/20 text-brand-400 border border-brand-500/30";
+        profitBadge.textContent = "BON DEAL RENTABLE";
+      } else if (netMargin > 0) {
+        profitBadge.className = "px-2.5 py-1 rounded-full text-xs font-extrabold bg-amber-500/20 text-amber-400 border border-amber-500/30";
+        profitBadge.textContent = "MARGE FAIBLE";
+      } else {
+        profitBadge.className = "px-2.5 py-1 rounded-full text-xs font-extrabold bg-red-500/20 text-red-400 border border-red-500/30";
+        profitBadge.textContent = "DÉFICITAIRE (ATTENTION)";
+      }
+
+      // Update detailed row items
+      document.getElementById('row-buy-price').textContent = `${buyPrice.toLocaleString('fr-FR')} €`;
+      document.getElementById('row-malus').textContent = `${malus.toLocaleString('fr-FR')} €`;
+      document.getElementById('row-transport').textContent = `${transportCost.toLocaleString('fr-FR')} €`;
+      document.getElementById('row-admin-fees').textContent = `${totalAdminFees.toLocaleString('fr-FR')} €`;
+      document.getElementById('row-margin').textContent = `${netMargin >= 0 ? '+' : ''}${Math.round(netMargin).toLocaleString('fr-FR')} €`;
+
+      // Update Chart Breakdown
+      updateChart(buyPrice, malus, transportCost, totalAdminFees, Math.max(0, netMargin));
+    }
+
+    function initChart() {
+      const ctx = document.getElementById('costChart').getContext('2d');
+      costChartInstance = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+          labels: ['Achat DE', 'Malus CO2', 'Transport', 'Frais & Admin', 'Marge Nette'],
+          datasets: [{
+            data: [24900, 485, 850, 485, 3265],
+            backgroundColor: [
+              '#3b82f6', // blue
+              '#f59e0b', // amber
+              '#6366f1', // indigo
+              '#94a3b8', // slate
+              '#10b981'  // emerald
+            ],
+            borderWidth: 0,
+            hoverOffset: 4
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              display: false
+            },
+            tooltip: {
+              callbacks: {
+                label: function(context) {
+                  return ` ${context.label}: ${context.raw.toLocaleString('fr-FR')} €`;
+                }
+              }
+            }
+          },
+          cutout: '72%'
+        }
+      });
+    }
+
+    function updateChart(buy, malus, transport, admin, margin) {
+      if (!costChartInstance) return;
+      costChartInstance.data.datasets[0].data = [buy, malus, transport, admin, margin];
+      costChartInstance.update();
+    }
+
+    function updateTransportCost() {
+      const mode = document.getElementById('sim-transport-mode').value;
+      const costInput = document.getElementById('sim-transport-cost');
+      if (mode === 'truck') {
+        costInput.value = 850;
+      } else if (mode === 'road') {
+        costInput.value = 480;
+      }
+      runSimulation();
+    }
+
+    function toggleAdvancedFees() {
+      const panel = document.getElementById('fees-advanced-panel');
+      panel.classList.toggle('hidden');
+    }
+
+    function resetSimulator() {
+      document.getElementById('sim-model').value = "Volkswagen Tiguan 2.0 TDI 150 DSG7 R-Line";
+      document.getElementById('sim-reg-date').value = "2021-06";
+      document.getElementById('sim-km').value = 68000;
+      document.getElementById('sim-co2').value = 142;
+      document.getElementById('sim-fuel').value = "diesel";
+      document.getElementById('sim-buy-price').value = 24900;
+      document.getElementById('sim-sell-price').value = 29900;
+      document.getElementById('sim-transport-mode').value = "truck";
+      document.getElementById('sim-transport-cost').value = 850;
+      runSimulation();
+      showToast("Simulateur réinitialisé aux valeurs par défaut");
+    }
+
+    function renderRadarDeals() {
+      const brandFilter = document.getElementById('radar-filter-brand').value;
+      const catFilter = document.getElementById('radar-filter-cat').value;
+      const marginFilter = parseFloat(document.getElementById('radar-filter-margin').value) || 0;
+
+      const container = document.getElementById('radar-deals-grid');
+      container.innerHTML = '';
+
+      let visibleCount = 0;
+
+      SAMPLE_RADAR_DEALS.forEach(deal => {
+        // Filters
+        if (brandFilter !== 'all' && deal.brand !== brandFilter) return;
+        if (catFilter !== 'all' && deal.category !== catFilter) return;
+
+        // Calculate theoretical net margin
+        const malus = calculateResidualMalus(deal.month, deal.co2, deal.fuel);
+        const transport = 800;
+        const fees = 485;
+        const netMargin = deal.priceFR - (deal.priceDE + malus + transport + fees);
+
+        if (netMargin < marginFilter) return;
+
+        visibleCount++;
+
+        // Star rating
+        let starsHtml = '';
+        for (let i = 0; i < 5; i++) {
+          starsHtml += `<i class="fa-solid fa-star ${i < deal.rating ? 'text-amber-400' : 'text-slate-700'} text-xs"></i>`;
+        }
+
+        const card = document.createElement('div');
+        card.className = "bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden hover:border-slate-700 transition flex flex-col shadow-xl";
+        card.innerHTML = `
+          <div class="h-44 relative overflow-hidden bg-slate-950">
+            <img src="${deal.image}" alt="${deal.model}" class="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
+                 onerror="this.src='https://placehold.co/600x400/1e293b/94a3b8?text=Auto+DE'">
+            <div class="absolute top-3 left-3 bg-black/70 backdrop-blur-md px-2.5 py-1 rounded-lg text-xs font-semibold text-white border border-white/10">
+              ${deal.year} • ${deal.km.toLocaleString('fr-FR')} km
+            </div>
+            <div class="absolute top-3 right-3 bg-emerald-500/90 text-slate-950 px-2 py-0.5 rounded-lg text-xs font-extrabold">
+              +${Math.round(netMargin).toLocaleString('fr-FR')} € net
+            </div>
+          </div>
+
+          <div class="p-4 flex-1 flex flex-col justify-between">
+            <div>
+              <div class="flex items-center justify-between text-[11px] text-slate-400 mb-1">
+                <span>${deal.category} • ${deal.co2}g CO2/km</span>
+                <span class="flex items-center space-x-0.5">${starsHtml}</span>
+              </div>
+              <h4 class="font-bold text-sm text-white line-clamp-1">${deal.model}</h4>
+              <p class="text-xs text-slate-400 mt-0.5 flex items-center space-x-1">
+                <i class="fa-solid fa-store text-slate-500 text-[10px]"></i>
+                <span>${deal.dealer}</span>
+              </p>
+            </div>
+
+            <!-- Price spread comparison -->
+            <div class="mt-4 pt-3 border-t border-slate-800/80 grid grid-cols-2 gap-2 text-xs">
+              <div class="bg-slate-800/50 p-2 rounded-xl">
+                <span class="text-[10px] text-slate-400 block">Achat Allemagne</span>
+                <span class="font-bold font-mono text-white">${deal.priceDE.toLocaleString('fr-FR')} €</span>
+              </div>
+              <div class="bg-slate-800/50 p-2 rounded-xl">
+                <span class="text-[10px] text-slate-400 block">Cote France Moy.</span>
+                <span class="font-bold font-mono text-emerald-400">${deal.priceFR.toLocaleString('fr-FR')} €</span>
+              </div>
+            </div>
+
+            <!-- Actions buttons -->
+            <div class="mt-4 flex items-center space-x-2">
+              <button onclick="loadDealIntoSimulator('${deal.id}')" class="flex-1 py-2 px-3 rounded-xl bg-brand-600 hover:bg-brand-500 text-white text-xs font-semibold transition flex items-center justify-center space-x-1.5">
+                <i class="fa-solid fa-calculator"></i>
+                <span>Simuler</span>
+              </button>
+              <button onclick="addDealToPipeline('${deal.id}')" title="Ajouter au Pipeline" class="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white transition border border-slate-700">
+                <i class="fa-solid fa-folder-plus"></i>
+              </button>
+              <a href="${deal.mobileUrl}" target="_blank" rel="noopener noreferrer" title="Voir l'annonce simulée" class="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white transition border border-slate-700">
+                <i class="fa-solid fa-arrow-up-right-from-square"></i>
+              </a>
+            </div>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+
+      document.getElementById('radar-deals-count').textContent = visibleCount;
+    }
+
+    function loadDealIntoSimulator(dealId) {
+      const deal = SAMPLE_RADAR_DEALS.find(d => d.id === dealId);
+      if (!deal) return;
+
+      document.getElementById('sim-model').value = deal.model;
+      document.getElementById('sim-reg-date').value = deal.month;
+      document.getElementById('sim-km').value = deal.km;
+      document.getElementById('sim-co2').value = deal.co2;
+      document.getElementById('sim-fuel').value = deal.fuel;
+      document.getElementById('sim-buy-price').value = deal.priceDE;
+      document.getElementById('sim-sell-price').value = deal.priceFR;
+      document.getElementById('sim-vat-deductible').checked = deal.tvaDeductible;
+
+      runSimulation();
+      switchTab('simulateur');
+      showToast(`Deal "${deal.brand}" chargé dans le simulateur`);
+    }
+
+    function addDealToPipeline(dealId) {
+      const deal = SAMPLE_RADAR_DEALS.find(d => d.id === dealId);
+      if (!deal) return;
+
+      const malus = calculateResidualMalus(deal.month, deal.co2, deal.fuel);
+      const margin = deal.priceFR - (deal.priceDE + malus + 800 + 485);
+
+      const newVehicle = {
+        id: "pip-" + Date.now(),
+        model: deal.model,
+        stage: 1, // 1: En négo
+        buyPrice: deal.priceDE,
+        sellPrice: deal.priceFR,
+        margin: Math.round(margin),
+        notes: `Source: ${deal.dealer} (Mobile.de)`
+      };
+
+      pipelineVehicles.unshift(newVehicle);
+      savePipelineToStorage();
+      renderPipelineBoard();
+      showToast("Véhicule ajouté avec succès au Pipeline d'achat !");
+    }
+
+    function saveSimulatedDealToPipeline() {
+      const model = document.getElementById('sim-model').value || "Véhicule Import";
+      const buyPrice = parseFloat(document.getElementById('sim-buy-price').value) || 0;
+      const sellPrice = parseFloat(document.getElementById('sim-sell-price').value) || 0;
+      const resMarginStr = document.getElementById('res-margin').textContent.replace(/[^\d.-]/g, '');
+      const netMargin = parseFloat(resMarginStr) || (sellPrice - buyPrice);
+
+      const newVehicle = {
+        id: "pip-" + Date.now(),
+        model: model,
+        stage: 1,
+        buyPrice: buyPrice,
+        sellPrice: sellPrice,
+        margin: Math.round(netMargin),
+        notes: "Créé via le simulateur de marge"
+      };
+
+      pipelineVehicles.unshift(newVehicle);
+      savePipelineToStorage();
+      renderPipelineBoard();
+      showToast("Deal enregistré dans votre Pipeline Kanban !");
+      switchTab('pipeline');
+    }
+
+    function renderPipelineBoard() {
+      // Clear 6 stage containers
+      for (let s = 1; s <= 6; s++) {
+        const col = document.getElementById(`col-stage-${s}`);
+        if (col) col.innerHTML = '';
+        const countBadge = document.getElementById(`count-stage-${s}`);
+        if (countBadge) countBadge.textContent = '0';
+      }
+
+      let totalCars = pipelineVehicles.length;
+      let totalInvest = 0;
+      let totalProfit = 0;
+      const stageCounts = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0 };
+
+      pipelineVehicles.forEach(item => {
+        stageCounts[item.stage] = (stageCounts[item.stage] || 0) + 1;
+        totalInvest += (item.buyPrice || 0);
+        totalProfit += (item.margin || 0);
+
+        const card = document.createElement('div');
+        card.className = "bg-slate-800 border border-slate-700/80 rounded-xl p-3 shadow-md hover:border-slate-600 transition cursor-pointer select-none space-y-2";
+        card.setAttribute('draggable', 'true');
+        card.setAttribute('ondragstart', `drag(event, '${item.id}')`);
+        card.id = `card-${item.id}`;
+
+        card.innerHTML = `
+          <div class="flex items-start justify-between">
+            <h5 class="font-bold text-xs text-white leading-tight">${item.model}</h5>
+            <button onclick="deletePipelineItem('${item.id}', event)" class="text-slate-500 hover:text-red-400 p-0.5 ml-1">
+              <i class="fa-solid fa-trash text-[10px]"></i>
+            </button>
+          </div>
+
+          <div class="flex justify-between items-center text-[11px] pt-1 border-t border-slate-700/50">
+            <span class="text-slate-400">Achat: <strong class="font-mono text-slate-200">${item.buyPrice.toLocaleString('fr-FR')} €</strong></span>
+            <span class="font-bold font-mono text-emerald-400">+${item.margin.toLocaleString('fr-FR')} €</span>
+          </div>
+
+          ${item.notes ? `<p class="text-[10px] text-slate-400 italic line-clamp-1">${item.notes}</p>` : ''}
+
+          <!-- Quick Move Step Buttons -->
+          <div class="flex items-center justify-between pt-1 text-[10px]">
+            <button onclick="moveVehicleStage('${item.id}', -1)" ${item.stage <= 1 ? 'disabled class="opacity-20 cursor-not-allowed"' : 'class="text-slate-400 hover:text-white"'} title="Étape précédente">
+              <i class="fa-solid fa-arrow-left"></i>
+            </button>
+            <span class="text-[10px] font-semibold text-slate-400">Étape ${item.stage}/6</span>
+            <button onclick="moveVehicleStage('${item.id}', 1)" ${item.stage >= 6 ? 'disabled class="opacity-20 cursor-not-allowed"' : 'class="text-slate-400 hover:text-white"'} title="Étape suivante">
+              <i class="fa-solid fa-arrow-right"></i>
+            </button>
+          </div>
+        `;
+
+        const targetCol = document.getElementById(`col-stage-${item.stage}`);
+        if (targetCol) targetCol.appendChild(card);
+      });
+
+      // Update badge counts per stage
+      for (let s = 1; s <= 6; s++) {
+        const countBadge = document.getElementById(`count-stage-${s}`);
+        if (countBadge) countBadge.textContent = stageCounts[s] || 0;
+      }
+
+      // Update Header & Pipeline KPIs
+      document.getElementById('pip-total-cars').textContent = totalCars;
+      document.getElementById('pip-total-invest').textContent = `${Math.round(totalInvest).toLocaleString('fr-FR')} €`;
+      document.getElementById('pip-total-profit').textContent = `+${Math.round(totalProfit).toLocaleString('fr-FR')} €`;
+      document.getElementById('pipeline-badge-count').textContent = totalCars;
+      document.getElementById('header-active-count').textContent = `${totalCars} en cours`;
+    }
+
+    /* Drag and Drop Handlers */
+    function allowDrop(ev) {
+      ev.preventDefault();
+    }
+
+    function drag(ev, itemId) {
+      ev.dataTransfer.setData("text/plain", itemId);
+    }
+
+    function drop(ev, newStage) {
+      ev.preventDefault();
+      const itemId = ev.dataTransfer.getData("text/plain");
+      const vehicle = pipelineVehicles.find(v => v.id === itemId);
+      if (vehicle) {
+        vehicle.stage = newStage;
+        savePipelineToStorage();
+        renderPipelineBoard();
+        showToast(`Véhicule déplacé à l'étape ${newStage}`);
+      }
+    }
+
+    function moveVehicleStage(itemId, direction) {
+      const vehicle = pipelineVehicles.find(v => v.id === itemId);
+      if (!vehicle) return;
+      const targetStage = vehicle.stage + direction;
+      if (targetStage >= 1 && targetStage <= 6) {
+        vehicle.stage = targetStage;
+        savePipelineToStorage();
+        renderPipelineBoard();
+      }
+    }
+
+    function deletePipelineItem(itemId, ev) {
+      if (ev) ev.stopPropagation();
+      pipelineVehicles = pipelineVehicles.filter(v => v.id !== itemId);
+      savePipelineToStorage();
+      renderPipelineBoard();
+      showToast("Véhicule retiré du pipeline");
+    }
+
+    function savePipelineToStorage() {
+      localStorage.setItem('auto_pipeline_v1', JSON.stringify(pipelineVehicles));
+    }
+
+    function openAddVehicleModal() {
+      document.getElementById('vehicle-modal').classList.remove('hidden');
+    }
+
+    function closeVehicleModal() {
+      document.getElementById('vehicle-modal').classList.add('hidden');
+    }
+
+    function saveVehicleFromModal() {
+      const model = document.getElementById('modal-model').value.trim() || "Véhicule sans nom";
+      const buyPrice = parseFloat(document.getElementById('modal-buy').value) || 0;
+      const sellPrice = parseFloat(document.getElementById('modal-sell').value) || 0;
+      const stage = parseInt(document.getElementById('modal-stage').value) || 1;
+      const notes = document.getElementById('modal-notes').value.trim();
+
+      const netMargin = sellPrice - (buyPrice + 800 + 400); // Quick approx
+
+      const newVehicle = {
+        id: "pip-" + Date.now(),
+        model: model,
+        stage: stage,
+        buyPrice: buyPrice,
+        sellPrice: sellPrice,
+        margin: Math.round(netMargin),
+        notes: notes
+      };
+
+      pipelineVehicles.unshift(newVehicle);
+      savePipelineToStorage();
+      renderPipelineBoard();
+      closeVehicleModal();
+      showToast("Nouveau véhicule ajouté au pipeline !");
+    }
+
+    function generateGermanEmail() {
+      const dealer = document.getElementById('email-dealer-name').value || "Sehr geehrte Damen und Herren";
+      const car = document.getElementById('email-car-model').value || "das angebotene Fahrzeug";
+      const price = document.getElementById('email-price').value;
+      const offer = document.getElementById('email-offer').value;
+
+      const askCoc = document.getElementById('chk-ask-coc').checked;
+      const askTva = document.getElementById('chk-ask-tva').checked;
+      const askUnfall = document.getElementById('chk-ask-unfall').checked;
+      const askDocs = document.getElementById('chk-ask-docs').checked;
+
+      let germanBody = `Sehr geehrte Damen und Herren,\n\nich interessiere mich sehr für Ihr Inserat bzgl. folgendem Fahrzeug: ${car} (angeboten für ${price ? price + ' €' : 'Ihren Angebotspreis'}).\n\nVor einer verbindlichen Reservierung bzw. Terminvereinbarung zur Abholung hätte ich folgende wichtige Fragen an Sie:\n`;
+      let frenchBody = `Madame, Monsieur,\n\nJe suis vivement intéressé par votre annonce concernant le véhicule : ${car} (affiché à ${price ? price + ' €' : 'votre prix'}).\n\nAvant une réservation ferme ou fixation d'un rendez-vous pour enlèvement, j'aurais les questions suivantes :\n`;
+
+      if (askUnfall) {
+        germanBody += `- Können Sie schriftlich bestätigen, dass das Fahrzeug unfall- und nachlackierungsfrei ist?\n`;
+        frenchBody += `- Pouvez-vous confirmer par écrit que le véhicule est non-accidenté et sans retouche de peinture ?\n`;
+      }
+      if (askDocs) {
+        germanBody += `- Liegen beide Teile der Zulassungsbescheinigung (Teil I und Teil II / Fahrzeugbrief) im Original vor?\n`;
+        frenchBody += `- Les deux volets originaux de la carte grise (Teil I et Teil II / Fahrzeugbrief) sont-ils bien disponibles ?\n`;
+      }
+      if (askCoc) {
+        germanBody += `- Liegt die originale EG-Übereinstimmungsbescheinigung (COC-Dokument) dem Fahrzeug bei?\n`;
+        frenchBody += `- Le Certificat de Conformité Européen d'origine (COC) est-il joint au véhicule ?\n`;
+      }
+      if (askTva) {
+        germanBody += `- Ist die Mehrwertsteuer ausweisbar (Netto-Export möglich) oder gilt die Differenzbesteuerung nach §25a UStG?\n`;
+        frenchBody += `- La TVA est-elle récupérable (export hors taxe) ou soumis au régime de la marge (§25a) ?\n`;
+      }
+
+      if (offer && parseFloat(offer) > 0) {
+        germanBody += `\nBei zeitnaher Abwicklung und sofortiger Anzahlung möchte ich Ihnen ein Angebot von ${offer} € unterbreiten.\n`;
+        frenchBody += `\nPour un règlement rapide et un acompte immédiat, je vous soumets une offre à ${offer} €.\n`;
+      }
+
+      germanBody += `\nÜber eine kurze Rückmeldung und Zusendung einer Kopie der Dokumente würde ich mich freuen.\n\nMit freundlichen Grüßen,\n[Ihr Name / Votre Nom]`;
+      frenchBody += `\nDans l'attente de votre retour et de l'envoi d'une copie des documents.\n\nCordialement,\n[Votre Nom]`;
+
+      document.getElementById('email-output-de').value = germanBody;
+      document.getElementById('email-output-fr').innerHTML = frenchBody.replace(/\n/g, '<br>');
+    }
+
+    function openGermanEmailModalWithCurrent() {
+      const model = document.getElementById('sim-model').value;
+      const price = document.getElementById('sim-buy-price').value;
+      document.getElementById('email-car-model').value = model;
+      document.getElementById('email-price').value = price;
+      generateGermanEmail();
+      switchTab('outils');
+      showToast("Email pré-rempli dans l'onglet Outils !");
+    }
+
+    function copyGeneratedEmail() {
+      const textarea = document.getElementById('email-output-de');
+      textarea.select();
+      textarea.setSelectionRange(0, 99999);
+      try {
+        document.execCommand('copy');
+        showToast("Texte allemand copié dans le presse-papiers !");
+      } catch (err) {
+        showToast("Impossible de copier automatiquement");
+      }
+    }
+
+    function updateChecklistProgress() {
+      const checkboxes = document.querySelectorAll('#checklist-container input[type="checkbox"]');
+      let checkedCount = 0;
+      const stateArr = [];
+
+      checkboxes.forEach((cb, index) => {
+        if (cb.checked) checkedCount++;
+        stateArr.push(cb.checked);
+      });
+
+      document.getElementById('checklist-progress-badge').textContent = `${checkedCount} / ${checkboxes.length} validés`;
+      localStorage.setItem('auto_checklist_state', JSON.stringify(stateArr));
+
+      if (checkedCount === checkboxes.length) {
+        showToast("Félicitations : toutes les étapes administratives sont validées !");
+      }
+    }
+
+    function loadChecklistState() {
+      const saved = localStorage.getItem('auto_checklist_state');
+      if (!saved) return;
+      try {
+        const stateArr = JSON.parse(saved);
+        const checkboxes = document.querySelectorAll('#checklist-container input[type="checkbox"]');
+        checkboxes.forEach((cb, idx) => {
+          if (stateArr[idx] !== undefined) {
+            cb.checked = stateArr[idx];
+          }
+        });
+        updateChecklistProgress();
+      } catch (e) {}
+    }
+
+    function showToast(message, isError = false) {
+      const toast = document.getElementById('toast');
+      const toastMsg = document.getElementById('toast-message');
+      const toastIcon = document.getElementById('toast-icon');
+
+      toastMsg.textContent = message;
+      toastIcon.innerHTML = isError ? '<i class="fa-solid fa-triangle-exclamation text-red-400"></i>' : '<i class="fa-solid fa-circle-check text-emerald-400"></i>';
+
+      toast.classList.remove('translate-y-20', 'opacity-0');
+      toast.classList.add('translate-y-0', 'opacity-100');
+
+      setTimeout(() => {
+        toast.classList.remove('translate-y-0', 'opacity-100');
+        toast.classList.add('translate-y-20', 'opacity-0');
+      }, 3500);
+    }
+  </script>
+</body>
+</html>
