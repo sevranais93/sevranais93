@@ -514,7 +514,16 @@ Mit freundlichen Grüßen,</textarea>
     }
 
     // INIT
+   // CHARGEMENT AUTOMATIQUE DU FICHIER DEALS.JSON
+fetch('deals.json')
+  .then(reponse => reponse.json())
+  .then(donnees => {
+    deals = donnees;
     renderDeals();
+  })
+  .catch(() => {
+    renderDeals(); // Données par défaut en cas d'erreur
+  });
     calculerTout();
     renderPipeline();
   </script>
