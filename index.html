@@ -1,25 +1,27 @@
 <!DOCTYPE html>
-<html lang="fr" class="scroll-smooth bg-black text-white antialiased">
+<html lang="fr" class="bg-black text-white antialiased">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>KRONOS ARBITRAGE — Sourcing Automobile d'Exception</title>
+  <title>TERMINAL // ARBITRAGE AUTO DE-FR</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500;600&display=swap" rel="stylesheet">
   <script>
     tailwind.config = {
       theme: {
         extend: {
           fontFamily: {
-            serif: ['Cinzel', 'serif'],
-            sans: ['Plus Jakarta Sans', 'sans-serif'],
+            sans: ['Space Grotesk', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
           },
           colors: {
-            onyx: '#080808',
-            panel: '#101010',
-            borderDim: 'rgba(255, 255, 255, 0.08)',
+            noir: '#050505',
+            surface: '#0d0d0d',
+            carte: '#141414',
+            bordure: 'rgba(255, 255, 255, 0.08)',
+            bordureForte: 'rgba(255, 255, 255, 0.22)',
           }
         }
       }
@@ -27,428 +29,494 @@
   </script>
   <style>
     ::selection { background: #ffffff; color: #000000; }
-    .hairline-border { border: 1px solid rgba(255, 255, 255, 0.08); }
-    .hairline-border-b { border-bottom: 1px solid rgba(255, 255, 255, 0.08); }
-    .hairline-border-t { border-top: 1px solid rgba(255, 255, 255, 0.08); }
+    .border-subtle { border: 1px solid rgba(255, 255, 255, 0.08); }
+    .border-b-subtle { border-bottom: 1px solid rgba(255, 255, 255, 0.08); }
+    .border-t-subtle { border-top: 1px solid rgba(255, 255, 255, 0.08); }
+    input, select, textarea {
+      background-color: #0d0d0d !important;
+      border: 1px solid rgba(255, 255, 255, 0.12) !important;
+      color: #ffffff !important;
+    }
+    input:focus, select:focus, textarea:focus {
+      border-color: #ffffff !important;
+      outline: none !important;
+    }
   </style>
 </head>
-<body class="bg-black text-neutral-300 font-sans tracking-wide min-h-screen">
+<body class="bg-noir text-neutral-300 font-sans text-sm min-h-screen">
 
-  <!-- NAVIGATION -->
-  <header class="fixed top-0 left-0 right-0 z-50 bg-black/80 backdrop-blur-md hairline-border-b">
-    <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
-      <a href="#" class="flex items-center space-x-3">
-        <span class="w-8 h-8 rounded-full border border-white/30 flex items-center justify-center font-serif text-xs text-white">K</span>
-        <span class="font-serif tracking-[0.25em] text-sm text-white uppercase font-semibold">Kronos Arbitrage</span>
-      </a>
-
-      <nav class="hidden md:flex items-center space-x-8 text-xs uppercase tracking-widest text-neutral-400">
-        <a href="#collection" class="hover:text-white transition">Sélection</a>
-        <a href="#simulateur" class="hover:text-white transition">Simulateur</a>
-        <a href="#methode" class="hover:text-white transition">Protocole</a>
-        <a href="#contact" class="hover:text-white transition">Mandat Privé</a>
-      </nav>
-
-      <a href="#contact" class="hidden sm:inline-flex px-5 py-2.5 text-xs uppercase tracking-widest border border-white text-white hover:bg-white hover:text-black transition duration-300">
-        Demande de Mandat
-      </a>
+  <!-- TOP BAR COMMAND CENTER -->
+  <header class="border-b-subtle bg-noir/90 backdrop-blur sticky top-0 z-40 px-6 py-4 flex items-center justify-between">
+    <div class="flex items-center space-x-4">
+      <div class="w-3 h-3 bg-white"></div>
+      <span class="font-mono text-xs uppercase tracking-[0.25em] text-white font-semibold">ARBITRAGE TERMINAL // DE ➔ FR</span>
+      <span class="hidden sm:inline-block px-2 py-0.5 text-[10px] font-mono border border-white/20 text-neutral-400">SESSION PRIVÉE</span>
     </div>
+
+    <!-- ONGLETS DE NAVIGATION DU WORKSTATION -->
+    <nav class="flex items-center space-x-1 font-mono text-xs">
+      <button onclick="switchTab('radar')" id="tab-radar" class="tab-btn px-4 py-2 border border-white bg-white text-black font-semibold uppercase tracking-wider transition">1. Radar & Sourcing</button>
+      <button onclick="switchTab('calculateur')" id="tab-calculateur" class="tab-btn px-4 py-2 border border-transparent text-neutral-400 hover:text-white uppercase tracking-wider transition">2. Calculateur</button>
+      <button onclick="switchTab('pipeline')" id="tab-pipeline" class="tab-btn px-4 py-2 border border-transparent text-neutral-400 hover:text-white uppercase tracking-wider transition">3. Suivi Achats</button>
+      <button onclick="switchTab('contact-de')" id="tab-contact-de" class="tab-btn px-4 py-2 border border-transparent text-neutral-400 hover:text-white uppercase tracking-wider transition">4. Modèles DE</button>
+    </nav>
   </header>
 
-  <!-- HERO SECTION -->
-  <section class="relative pt-44 pb-28 px-6 overflow-hidden">
-    <div class="max-w-5xl mx-auto text-center">
-      <div class="inline-flex items-center space-x-2 px-3 py-1 mb-8 border border-white/10 rounded-full text-[11px] uppercase tracking-[0.2em] text-neutral-400">
-        <span class="w-1.5 h-1.5 rounded-full bg-white animate-pulse"></span>
-        <span>Courtage & Arbitrage Transfrontalier</span>
-      </div>
+  <main class="max-w-7xl mx-auto p-6">
 
-      <h1 class="font-serif text-4xl sm:text-6xl md:text-7xl font-light text-white tracking-tight leading-[1.1] mb-8">
-        L’excellence allemande.<br>
-        <span class="font-normal italic text-neutral-400">Le prix de source directe.</span>
-      </h1>
-
-      <p class="max-w-2xl mx-auto text-sm sm:text-base text-neutral-400 font-light leading-relaxed mb-12">
-        Nous exploitons les disparités de valeur entre les réseaux de concessions officiels d'Outre-Rhin et la demande française. Un sourcing sélectif, sécurisé et entièrement transparent.
-      </p>
-
-      <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
-        <a href="#collection" class="w-full sm:w-auto px-8 py-3.5 bg-white text-black text-xs uppercase tracking-[0.18em] font-semibold hover:bg-neutral-200 transition">
-          Découvrir les opportunités
-        </a>
-        <a href="#simulateur" class="w-full sm:w-auto px-8 py-3.5 border border-white/20 text-white text-xs uppercase tracking-[0.18em] hover:border-white transition">
-          Calculer une marge nette
-        </a>
-      </div>
-    </div>
-  </section>
-
-  <!-- REASSURANCE / CHIFFRES CLÉS -->
-  <section class="hairline-border-t hairline-border-b bg-onyx py-10 px-6">
-    <div class="max-w-6xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
-      <div>
-        <div class="font-serif text-2xl sm:text-3xl text-white font-medium">100 %</div>
-        <div class="text-[11px] uppercase tracking-widest text-neutral-500 mt-1">Concessionnaires officiels</div>
-      </div>
-      <div>
-        <div class="font-serif text-2xl sm:text-3xl text-white font-medium">3 500 €</div>
-        <div class="text-[11px] uppercase tracking-widest text-neutral-500 mt-1">Économie moyenne constatée</div>
-      </div>
-      <div>
-        <div class="font-serif text-2xl sm:text-3xl text-white font-medium">0 €</div>
-        <div class="text-[11px] uppercase tracking-widest text-neutral-500 mt-1">Surprise fiscale (TVA/Malus)</div>
-      </div>
-      <div>
-        <div class="font-serif text-2xl sm:text-3xl text-white font-medium">7 à 12 j</div>
-        <div class="text-[11px] uppercase tracking-widest text-neutral-500 mt-1">Délai moyen de rapatriement</div>
-      </div>
-    </div>
-  </section>
-
-  <!-- OPPORTUNITÉS / RADAR -->
-  <section id="collection" class="py-24 px-6 max-w-7xl mx-auto">
-    <div class="flex flex-col md:flex-row md:items-end justify-between mb-14 pb-6 hairline-border-b">
-      <div>
-        <span class="text-[11px] uppercase tracking-[0.25em] text-neutral-500">Sourcing du jour</span>
-        <h2 class="font-serif text-2xl sm:text-4xl text-white mt-2">Véhicules Détectés</h2>
-      </div>
-      <p class="text-xs text-neutral-400 mt-3 md:mt-0 max-w-sm">
-        Véhicules audités en concessions agréées, éligibles à l'exonération de TVA en France (plus de 6 000 km et 6 mois).
-      </p>
-    </div>
-
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-      
-      <!-- Véhicule 1 -->
-      <div class="bg-panel hairline-border p-6 flex flex-col justify-between hover:border-white/40 transition duration-300">
-        <div>
-          <div class="flex justify-between items-start mb-4">
-            <span class="text-[10px] uppercase tracking-widest text-neutral-400">Volkswagen</span>
-            <span class="text-[10px] tracking-widest border border-white/20 px-2 py-0.5 text-white">DEAL VALIDÉ</span>
-          </div>
-          <h3 class="font-serif text-xl text-white mb-1">Tiguan 2.0 TDI R-Line</h3>
-          <p class="text-xs text-neutral-400 mb-6">2021 • 54 000 km • DSG7 4Motion 150 ch</p>
-          
-          <div class="space-y-2 text-xs border-t border-b border-white/5 py-4 my-4">
-            <div class="flex justify-between">
-              <span class="text-neutral-500">Achat concessionnaire (DE)</span>
-              <span class="text-white font-mono">27 400 €</span>
-            </div>
-            <div class="flex justify-between">
-              <span class="text-neutral-500">Frais d'import & Malus résiduel</span>
-              <span class="text-white font-mono">1 380 €</span>
-            </div>
-            <div class="flex justify-between">
-              <span class="text-neutral-500">Cote marché moyen (FR)</span>
-              <span class="text-neutral-400 font-mono">32 900 €</span>
-            </div>
-          </div>
+    <!-- ========================================== -->
+    <!-- SECTION 1 : RADAR & SOURCING -->
+    <!-- ========================================== -->
+    <section id="view-radar" class="tab-view space-y-6">
+      <!-- STATS BANNER -->
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div class="p-4 bg-surface border-subtle">
+          <div class="text-[10px] font-mono text-neutral-500 uppercase tracking-widest">Cibles Détectées</div>
+          <div id="stat-count" class="text-2xl font-mono text-white font-semibold mt-1">4</div>
         </div>
+        <div class="p-4 bg-surface border-subtle">
+          <div class="text-[10px] font-mono text-neutral-500 uppercase tracking-widest">Marge Moyenne Projetée</div>
+          <div class="text-2xl font-mono text-white font-semibold mt-1">+ 4 125 €</div>
+        </div>
+        <div class="p-4 bg-surface border-subtle">
+          <div class="text-[10px] font-mono text-neutral-500 uppercase tracking-widest">ROI Moyen</div>
+          <div class="text-2xl font-mono text-white font-semibold mt-1">14,2 %</div>
+        </div>
+        <div class="p-4 bg-surface border-subtle">
+          <div class="text-[10px] font-mono text-neutral-500 uppercase tracking-widest">Seuil Alerte Marge</div>
+          <div class="text-2xl font-mono text-white font-semibold mt-1">> 3 000 €</div>
+        </div>
+      </div>
 
-        <div>
-          <div class="flex justify-between items-baseline mb-4">
-            <span class="text-[11px] uppercase tracking-wider text-neutral-400">Marge brute estimée</span>
-            <span class="font-mono text-lg text-white font-semibold">+ 4 120 €</span>
-          </div>
-          <button onclick="chargerDansSimulateur(27400, 32900, 2021, 145)" class="w-full py-2.5 text-center border border-white/20 text-xs uppercase tracking-wider text-white hover:bg-white hover:text-black transition">
-            Analyser dans le simulateur
+      <!-- AJOUTER RAPIDEMENT UNE ANNONCE -->
+      <div class="p-5 bg-surface border-subtle space-y-4">
+        <div class="flex items-center justify-between border-b-subtle pb-3">
+          <span class="font-mono text-xs uppercase tracking-widest text-white font-medium">+ Entrer un véhicule repéré sur Mobile.de</span>
+          <span class="text-[11px] text-neutral-500 font-mono">Calcul automatique de la rentabilité</span>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-3">
+          <input type="text" id="add-model" placeholder="Modèle (ex. Tiguan 2.0 TDI)" class="px-3 py-2 text-xs font-mono">
+          <input type="number" id="add-annee" placeholder="Année (ex. 2021)" class="px-3 py-2 text-xs font-mono">
+          <input type="number" id="add-co2" placeholder="CO2 g/km (ex. 142)" class="px-3 py-2 text-xs font-mono">
+          <input type="number" id="add-prix-de" placeholder="Prix DE (€)" class="px-3 py-2 text-xs font-mono">
+          <input type="number" id="add-prix-fr" placeholder="Cible FR (€)" class="px-3 py-2 text-xs font-mono">
+          <button onclick="ajouterDeal()" class="px-4 py-2 bg-white text-black font-mono text-xs uppercase font-semibold hover:bg-neutral-200 transition">
+            Calculer & Ajouter
           </button>
         </div>
       </div>
 
-      <!-- Véhicule 2 -->
-      <div class="bg-panel hairline-border p-6 flex flex-col justify-between hover:border-white/40 transition duration-300">
+      <!-- TABLEAU DES OPPORTUNITÉS -->
+      <div class="bg-surface border-subtle overflow-x-auto">
+        <table class="w-full text-left font-mono text-xs">
+          <thead class="border-b-subtle text-neutral-400 bg-noir uppercase tracking-wider text-[11px]">
+            <tr>
+              <th class="p-4">Modèle & Motorisation</th>
+              <th class="p-4">MEC / CO2</th>
+              <th class="p-4">Achat DE</th>
+              <th class="p-4">Malus Est.</th>
+              <th class="p-4">Revient Total</th>
+              <th class="p-4">Cote Vente FR</th>
+              <th class="p-4">Marge Nette</th>
+              <th class="p-4 text-right">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="deals-tbody" class="divide-y divide-white/5">
+            <!-- Rempli par JavaScript -->
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ========================================== -->
+    <!-- SECTION 2 : CALCULATEUR DÉTAILLÉ -->
+    <!-- ========================================== -->
+    <section id="view-calculateur" class="tab-view hidden space-y-6">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        <!-- FORMULAIRE -->
+        <div class="lg:col-span-7 bg-surface border-subtle p-6 space-y-5">
+          <div class="border-b-subtle pb-3">
+            <h2 class="font-mono text-sm uppercase tracking-widest text-white font-semibold">Simulateur de Malus CO2 & Coût Global</h2>
+            <p class="text-xs text-neutral-500 mt-1">Intègre l'abattement officiel de 10% par an sur le malus écologique d'origine.</p>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-[11px] font-mono uppercase text-neutral-400 mb-1">Prix de vente concession DE (€)</label>
+              <input type="number" id="calc-achat" value="26500" class="w-full px-3 py-2 text-sm font-mono" oninput="calculerTout()">
+            </div>
+            <div>
+              <label class="block text-[11px] font-mono uppercase text-neutral-400 mb-1">Prix de revente estimé en FR (€)</label>
+              <input type="number" id="calc-revente" value="32500" class="w-full px-3 py-2 text-sm font-mono" oninput="calculerTout()">
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div>
+              <label class="block text-[11px] font-mono uppercase text-neutral-400 mb-1">Année 1ère Immat</label>
+              <select id="calc-annee" class="w-full px-3 py-2 text-sm font-mono" onchange="calculerTout()">
+                <option value="2025">2025 (1 an)</option>
+                <option value="2024">2024 (2 ans)</option>
+                <option value="2023">2023 (3 ans)</option>
+                <option value="2022">2022 (4 ans)</option>
+                <option value="2021" selected>2021 (5 ans)</option>
+                <option value="2020">2020 (6 ans)</option>
+                <option value="2019">2019 (7 ans)</option>
+                <option value="2018">2018 (8 ans)</option>
+                <option value="2015">2015 ou avant (>10 ans / 0€)</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-[11px] font-mono uppercase text-neutral-400 mb-1">CO2 WLTP (g/km)</label>
+              <input type="number" id="calc-co2" value="144" class="w-full px-3 py-2 text-sm font-mono" oninput="calculerTout()">
+            </div>
+            <div>
+              <label class="block text-[11px] font-mono uppercase text-neutral-400 mb-1">Transport / Convoyage (€)</label>
+              <input type="number" id="calc-transport" value="800" class="w-full px-3 py-2 text-sm font-mono" oninput="calculerTout()">
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2 border-t-subtle">
+            <div>
+              <label class="block text-[11px] font-mono uppercase text-neutral-400 mb-1">Frais Formalités (COC + CT) (€)</label>
+              <input type="number" id="calc-formalites" value="280" class="w-full px-3 py-2 text-sm font-mono" oninput="calculerTout()">
+            </div>
+            <div>
+              <label class="block text-[11px] font-mono uppercase text-neutral-400 mb-1">Préparation & Imprévus (€)</label>
+              <input type="number" id="calc-imprevus" value="300" class="w-full px-3 py-2 text-sm font-mono" oninput="calculerTout()">
+            </div>
+          </div>
+        </div>
+
+        <!-- RÉSULTATS CHIFFRÉS -->
+        <div class="lg:col-span-5 bg-surface border-subtle p-6 flex flex-col justify-between space-y-6">
+          <div class="border-b-subtle pb-3">
+            <span class="font-mono text-xs uppercase tracking-widest text-neutral-400">Bilan Financier Opérationnel</span>
+          </div>
+
+          <div class="space-y-3 font-mono text-xs">
+            <div class="flex justify-between py-1 border-b border-white/5">
+              <span class="text-neutral-400">Achat Véhicule</span>
+              <span id="out-achat" class="text-white">26 500 €</span>
+            </div>
+            <div class="flex justify-between py-1 border-b border-white/5">
+              <span class="text-neutral-400">Malus Écologique Résiduel</span>
+              <span id="out-malus" class="text-white">410 €</span>
+            </div>
+            <div class="flex justify-between py-1 border-b border-white/5">
+              <span class="text-neutral-400">Frais Logistique & Import</span>
+              <span id="out-frais" class="text-white">1 380 €</span>
+            </div>
+            <div class="flex justify-between py-2 border-b border-white/20 text-sm">
+              <span class="text-neutral-300 font-semibold">PRIX DE REVIENT TOTAL</span>
+              <span id="out-revient" class="text-white font-bold">28 290 €</span>
+            </div>
+          </div>
+
+          <div class="p-5 bg-white text-black space-y-1">
+            <div class="text-[10px] font-mono uppercase tracking-widest text-neutral-600 font-semibold">Marge Nette Arbitrage</div>
+            <div id="out-marge" class="text-3xl font-mono font-bold tracking-tight">+ 4 210 €</div>
+            <div class="flex justify-between text-xs font-mono text-neutral-700 pt-2 border-t border-black/10">
+              <span>Rendement (ROI)</span>
+              <span id="out-roi" class="font-bold">14,8 %</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================== -->
+    <!-- SECTION 3 : PIPELINE SUIVI DES ACHATS -->
+    <!-- ========================================== -->
+    <section id="view-pipeline" class="tab-view hidden space-y-6">
+      <div class="flex justify-between items-center border-b-subtle pb-4">
         <div>
-          <div class="flex justify-between items-start mb-4">
-            <span class="text-[10px] uppercase tracking-widest text-neutral-400">BMW</span>
-            <span class="text-[10px] tracking-widest border border-white/20 px-2 py-0.5 text-white">PREMIUM SELECT</span>
-          </div>
-          <h3 class="font-serif text-xl text-white mb-1">320d Touring M Sport</h3>
-          <p class="text-xs text-neutral-400 mb-6">2020 • 68 000 km • BVA8 xDrive 190 ch</p>
-          
-          <div class="space-y-2 text-xs border-t border-b border-white/5 py-4 my-4">
-            <div class="flex justify-between">
-              <span class="text-neutral-500">Achat concessionnaire (DE)</span>
-              <span class="text-white font-mono">28 900 €</span>
-            </div>
-            <div class="flex justify-between">
-              <span class="text-neutral-500">Frais d'import & Malus résiduel</span>
-              <span class="text-white font-mono">1 240 €</span>
-            </div>
-            <div class="flex justify-between">
-              <span class="text-neutral-500">Cote marché moyen (FR)</span>
-              <span class="text-neutral-400 font-mono">34 500 €</span>
-            </div>
-          </div>
+          <h2 class="font-mono text-sm uppercase tracking-widest text-white font-semibold">Tableau de Suivi des Véhicules</h2>
+          <p class="text-xs text-neutral-500">De la première prise de contact jusqu'à la revente finale.</p>
         </div>
-
-        <div>
-          <div class="flex justify-between items-baseline mb-4">
-            <span class="text-[11px] uppercase tracking-wider text-neutral-400">Marge brute estimée</span>
-            <span class="font-mono text-lg text-white font-semibold">+ 4 360 €</span>
-          </div>
-          <button onclick="chargerDansSimulateur(28900, 34500, 2020, 138)" class="w-full py-2.5 text-center border border-white/20 text-xs uppercase tracking-wider text-white hover:bg-white hover:text-black transition">
-            Analyser dans le simulateur
-          </button>
-        </div>
+        <button onclick="ajouterDossierTest()" class="px-3 py-1.5 border border-white/30 text-xs font-mono hover:border-white transition">+ Nouveau Dossier</button>
       </div>
 
-      <!-- Véhicule 3 -->
-      <div class="bg-panel hairline-border p-6 flex flex-col justify-between hover:border-white/40 transition duration-300">
-        <div>
-          <div class="flex justify-between items-start mb-4">
-            <span class="text-[10px] uppercase tracking-widest text-neutral-400">Audi</span>
-            <span class="text-[10px] tracking-widest border border-white/20 px-2 py-0.5 text-white">HAUTE DEMANDE</span>
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-4" id="kanban-cols">
+        <!-- COLONNE 1 -->
+        <div class="p-3 bg-surface border-subtle">
+          <div class="font-mono text-xs uppercase tracking-wider text-neutral-400 mb-3 pb-2 border-b border-white/10 flex justify-between">
+            <span>1. Contact & Négoc</span>
+            <span class="text-neutral-600">01</span>
           </div>
-          <h3 class="font-serif text-xl text-white mb-1">Q3 Sportback 35 TDI S-Line</h3>
-          <p class="text-xs text-neutral-400 mb-6">2022 • 42 000 km • S-Tronic 150 ch</p>
-          
-          <div class="space-y-2 text-xs border-t border-b border-white/5 py-4 my-4">
-            <div class="flex justify-between">
-              <span class="text-neutral-500">Achat concessionnaire (DE)</span>
-              <span class="text-white font-mono">33 500 €</span>
-            </div>
-            <div class="flex justify-between">
-              <span class="text-neutral-500">Frais d'import & Malus résiduel</span>
-              <span class="text-white font-mono">1 490 €</span>
-            </div>
-            <div class="flex justify-between">
-              <span class="text-neutral-500">Cote marché moyen (FR)</span>
-              <span class="text-neutral-400 font-mono">39 200 €</span>
-            </div>
+          <div class="space-y-3" id="col-contact"></div>
+        </div>
+        <!-- COLONNE 2 -->
+        <div class="p-3 bg-surface border-subtle">
+          <div class="font-mono text-xs uppercase tracking-wider text-neutral-400 mb-3 pb-2 border-b border-white/10 flex justify-between">
+            <span>2. Réservé / Virement</span>
+            <span class="text-neutral-600">02</span>
+          </div>
+          <div class="space-y-3" id="col-reserve"></div>
+        </div>
+        <!-- COLONNE 3 -->
+        <div class="p-3 bg-surface border-subtle">
+          <div class="font-mono text-xs uppercase tracking-wider text-neutral-400 mb-3 pb-2 border-b border-white/10 flex justify-between">
+            <span>3. Rapatrié / Papiers</span>
+            <span class="text-neutral-600">03</span>
+          </div>
+          <div class="space-y-3" id="col-rapatrie"></div>
+        </div>
+        <!-- COLONNE 4 -->
+        <div class="p-3 bg-surface border-subtle">
+          <div class="font-mono text-xs uppercase tracking-wider text-neutral-400 mb-3 pb-2 border-b border-white/10 flex justify-between">
+            <span>4. En Vente / Clôturé</span>
+            <span class="text-neutral-600">04</span>
+          </div>
+          <div class="space-y-3" id="col-vente"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================== -->
+    <!-- SECTION 4 : MODÈLES D'EMAILS EN ALLEMAND -->
+    <!-- ========================================== -->
+    <section id="view-contact-de" class="tab-view hidden space-y-6">
+      <div class="border-b-subtle pb-4">
+        <h2 class="font-mono text-sm uppercase tracking-widest text-white font-semibold">Templates Concessionnaires (Deutsch Pro)</h2>
+        <p class="text-xs text-neutral-500">Pour contacter directement les vendeurs sur Mobile.de et obtenir immédiatement les bons documents.</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- MODÈLE 1 -->
+        <div class="p-5 bg-surface border-subtle space-y-4">
+          <div class="flex justify-between items-center">
+            <span class="font-mono text-xs font-semibold text-white uppercase">1. Demande de Papiers & Réservation</span>
+            <button onclick="copierTexte('msg-1')" class="px-2 py-1 text-[10px] font-mono border border-white/30 hover:bg-white hover:text-black transition">Copier</button>
+          </div>
+          <textarea id="msg-1" rows="9" readonly class="w-full p-3 font-mono text-xs text-neutral-300">Sehr geehrte Damen und Herren,
+
+Ich interessiere mich für Ihr Fahrzeug und plane den Kauf für einen Export nach Frankreich.
+Könnten Sie mir bitte folgende Dokumente und Auskünfte zukommen lassen:
+- Eine Kopie des Fahrzeugbriefs (Zulassungsbescheinigung Teil II)
+- Die Bestätigung über das Vorhandensein des CoC-Papiers (EG-Übereinstimmungsbescheinigung)
+- Ist das Fahrzeug unfallfrei und scheckheftgepflegt bei Vertragswerkstätten?
+
+Wenn alles in Ordnung ist, kann ich das Fahrzeug zeitnah reservieren und per Banküberweisung bezahlen.
+
+Mit freundlichen Grüßen,</textarea>
+          <div class="text-[11px] text-neutral-500">
+            <strong>Usage :</strong> Premier contact pour exiger le Teil II et le COC indispensable sans perdre de temps.
           </div>
         </div>
 
-        <div>
-          <div class="flex justify-between items-baseline mb-4">
-            <span class="text-[11px] uppercase tracking-wider text-neutral-400">Marge brute estimée</span>
-            <span class="font-mono text-lg text-white font-semibold">+ 4 210 €</span>
+        <!-- MODÈLE 2 -->
+        <div class="p-5 bg-surface border-subtle space-y-4">
+          <div class="flex justify-between items-center">
+            <span class="font-mono text-xs font-semibold text-white uppercase">2. Clarification TVA (MwSt.)</span>
+            <button onclick="copierTexte('msg-2')" class="px-2 py-1 text-[10px] font-mono border border-white/30 hover:bg-white hover:text-black transition">Copier</button>
           </div>
-          <button onclick="chargerDansSimulateur(33500, 39200, 2022, 142)" class="w-full py-2.5 text-center border border-white/20 text-xs uppercase tracking-wider text-white hover:bg-white hover:text-black transition">
-            Analyser dans le simulateur
-          </button>
-        </div>
-      </div>
+          <textarea id="msg-2" rows="9" readonly class="w-full p-3 font-mono text-xs text-neutral-300">Sehr geehrte Damen und Herren,
 
-    </div>
-  </section>
+Bezüglich des angebotenen Fahrzeugs hätte ich eine kurze steuerliche Frage:
+Handelt es sich bei dem angegebenen Preis um ein Fahrzeug mit ausweisbarer Mehrwertsteuer (MwSt. ausweisbar) oder unterliegt der Verkauf der Differenzbesteuerung nach § 25a UStG?
 
-  <!-- SIMULATEUR D'ARBITRAGE & FISCALITÉ -->
-  <section id="simulateur" class="py-24 px-6 hairline-border-t bg-onyx">
-    <div class="max-w-4xl mx-auto">
-      <div class="text-center mb-14">
-        <span class="text-[11px] uppercase tracking-[0.25em] text-neutral-500">Outil de Décision Financière</span>
-        <h2 class="font-serif text-3xl sm:text-4xl text-white mt-2">Simulateur de Marge Nette</h2>
-        <p class="text-xs text-neutral-400 mt-3 max-w-lg mx-auto">
-          Intègre automatiquement la formule d'abattement du malus écologique CO2 français selon l'ancienneté du véhicule.
-        </p>
-      </div>
+Können Sie uns zudem bestätigen, ob Ausfuhrkennzeichen (Zollkennzeichen) vor Ort bei Ihrer Zulassungsstelle organisiert werden können?
 
-      <div class="bg-black hairline-border p-8 sm:p-10 space-y-8">
-        
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
-          <div>
-            <label class="block text-[11px] uppercase tracking-widest text-neutral-400 mb-2">Prix d'achat en Allemagne (€)</label>
-            <input type="number" id="sim_prix_achat" value="28000" step="500" class="w-full bg-panel hairline-border px-4 py-3 text-white font-mono focus:outline-none focus:border-white transition">
-          </div>
-          <div>
-            <label class="block text-[11px] uppercase tracking-widest text-neutral-400 mb-2">Prix de revente ciblé en France (€)</label>
-            <input type="number" id="sim_prix_revente" value="33500" step="500" class="w-full bg-panel hairline-border px-4 py-3 text-white font-mono focus:outline-none focus:border-white transition">
+Vielen Dank für Ihre Rückmeldung.
+
+Mit freundlichen Grüßen,</textarea>
+          <div class="text-[11px] text-neutral-500">
+            <strong>Usage :</strong> Évite le piège fiscal français en vérifiant le régime de TVA avant virement.
           </div>
         </div>
-
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
-          <div>
-            <label class="block text-[11px] uppercase tracking-widest text-neutral-400 mb-2">Année de 1ère MEC</label>
-            <select id="sim_annee" class="w-full bg-panel hairline-border px-4 py-3 text-white font-mono focus:outline-none focus:border-white transition">
-              <option value="2024">2024 (2 ans)</option>
-              <option value="2023">2023 (3 ans)</option>
-              <option value="2022">2022 (4 ans)</option>
-              <option value="2021" selected>2021 (5 ans)</option>
-              <option value="2020">2020 (6 ans)</option>
-              <option value="2019">2019 (7 ans)</option>
-              <option value="2018">2018 (8 ans)</option>
-              <option value="2016">2016 ou avant (+10 ans / Exonéré)</option>
-            </select>
-          </div>
-          <div>
-            <label class="block text-[11px] uppercase tracking-widest text-neutral-400 mb-2">Émissions CO2 (g/km)</label>
-            <input type="number" id="sim_co2" value="142" class="w-full bg-panel hairline-border px-4 py-3 text-white font-mono focus:outline-none focus:border-white transition">
-          </div>
-          <div>
-            <label class="block text-[11px] uppercase tracking-widest text-neutral-400 mb-2">Logistique / Rapatriement (€)</label>
-            <input type="number" id="sim_transport" value="850" step="50" class="w-full bg-panel hairline-border px-4 py-3 text-white font-mono focus:outline-none focus:border-white transition">
-          </div>
-        </div>
-
-        <div class="hairline-border-t pt-8">
-          <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 text-center">
-            <div class="p-4 bg-panel hairline-border">
-              <div class="text-[10px] uppercase tracking-widest text-neutral-500 mb-1">Malus résiduel estimé</div>
-              <div id="res_malus" class="font-mono text-lg text-white font-medium">320 €</div>
-            </div>
-            <div class="p-4 bg-panel hairline-border">
-              <div class="text-[10px] uppercase tracking-widest text-neutral-500 mb-1">Coût de revient total</div>
-              <div id="res_revient" class="font-mono text-lg text-white font-medium">29 450 €</div>
-            </div>
-            <div class="p-4 bg-white text-black">
-              <div class="text-[10px] uppercase tracking-widest text-neutral-700 font-semibold mb-1">Marge nette estimée</div>
-              <div id="res_marge" class="font-mono text-2xl font-bold text-black">+ 4 050 €</div>
-            </div>
-          </div>
-        </div>
-
       </div>
-    </div>
-  </section>
+    </section>
 
-  <!-- PROTOCOLE / METHODE -->
-  <section id="methode" class="py-24 px-6 max-w-6xl mx-auto">
-    <div class="text-center mb-16">
-      <span class="text-[11px] uppercase tracking-[0.25em] text-neutral-500">Rigueur & Déontologie</span>
-      <h2 class="font-serif text-3xl sm:text-4xl text-white mt-2">Le Protocole en 4 Piliers</h2>
-    </div>
-
-    <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
-      <div class="p-6 bg-panel hairline-border">
-        <span class="font-mono text-xs text-neutral-500">01 / AUDIT</span>
-        <h4 class="font-serif text-base text-white mt-3 mb-2">Traçabilité VIN</h4>
-        <p class="text-xs text-neutral-400 leading-relaxed">
-          Examen approfondi du carnet numérique d'entretien constructeur et contrôle d'absence d'accident non mentionné.
-        </p>
-      </div>
-
-      <div class="p-6 bg-panel hairline-border">
-        <span class="font-mono text-xs text-neutral-500">02 / PAPIERS</span>
-        <h4 class="font-serif text-base text-white mt-3 mb-2">Sécurisation Légale</h4>
-        <p class="text-xs text-neutral-400 leading-relaxed">
-          Contrôle systématique des Zulassungsbescheinigung Teil I & II et obtention préalable du Certificat de Conformité Européen (COC).
-        </p>
-      </div>
-
-      <div class="p-6 bg-panel hairline-border">
-        <span class="font-mono text-xs text-neutral-500">03 / CONVOYAGE</span>
-        <h4 class="font-serif text-base text-white mt-3 mb-2">Logistique Assurée</h4>
-        <p class="text-xs text-neutral-400 leading-relaxed">
-          Acheminement par transporteur professionnel ou convoyage sous plaques de transit allemandes assurées tous risques.
-        </p>
-      </div>
-
-      <div class="p-6 bg-panel hairline-border">
-        <span class="font-mono text-xs text-neutral-500">04 / FISCALITÉ</span>
-        <h4 class="font-serif text-base text-white mt-3 mb-2">Quitus Fiscal & ANTS</h4>
-        <p class="text-xs text-neutral-400 leading-relaxed">
-          Obtention du quitus fiscal auprès du SIE et réalisation de l'immatriculation définitive française sans démarche pour le client.
-        </p>
-      </div>
-    </div>
-  </section>
-
-  <!-- FORMULAIRE DE MANDAT / CONTACT -->
-  <section id="contact" class="py-24 px-6 hairline-border-t bg-onyx">
-    <div class="max-w-2xl mx-auto">
-      <div class="text-center mb-12">
-        <span class="text-[11px] uppercase tracking-[0.25em] text-neutral-500">Recherche Personnalisée</span>
-        <h2 class="font-serif text-3xl sm:text-4xl text-white mt-2">Ouvrir un Mandat</h2>
-        <p class="text-xs text-neutral-400 mt-3">
-          Précisez le véhicule recherché. Nous scannons les réseaux partenaires sous 48 heures.
-        </p>
-      </div>
-
-      <form onsubmit="event.preventDefault(); alert('Votre demande de mandat a bien été enregistrée.');" class="space-y-6">
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
-          <div>
-            <label class="block text-[11px] uppercase tracking-widest text-neutral-400 mb-2">Nom & Prénom</label>
-            <input type="text" required placeholder="Alexandre Martin" class="w-full bg-black hairline-border px-4 py-3 text-sm text-white focus:outline-none focus:border-white transition">
-          </div>
-          <div>
-            <label class="block text-[11px] uppercase tracking-widest text-neutral-400 mb-2">Courriel ou Téléphone</label>
-            <input type="text" required placeholder="alexandre@domaine.com" class="w-full bg-black hairline-border px-4 py-3 text-sm text-white focus:outline-none focus:border-white transition">
-          </div>
-        </div>
-
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
-          <div>
-            <label class="block text-[11px] uppercase tracking-widest text-neutral-400 mb-2">Modèle recherché</label>
-            <input type="text" required placeholder="ex. Tiguan R-Line, Série 3, Q5..." class="w-full bg-black hairline-border px-4 py-3 text-sm text-white focus:outline-none focus:border-white transition">
-          </div>
-          <div>
-            <label class="block text-[11px] uppercase tracking-widest text-neutral-400 mb-2">Budget maximum (€)</label>
-            <input type="number" placeholder="ex. 35000" class="w-full bg-black hairline-border px-4 py-3 text-sm text-white focus:outline-none focus:border-white transition">
-          </div>
-        </div>
-
-        <div>
-          <label class="block text-[11px] uppercase tracking-widest text-neutral-400 mb-2">Critères prioritaires</label>
-          <textarea rows="3" placeholder="Finition, motorisation, toit panoramique, attelage, historique..." class="w-full bg-black hairline-border px-4 py-3 text-sm text-white focus:outline-none focus:border-white transition"></textarea>
-        </div>
-
-        <button type="submit" class="w-full py-4 bg-white text-black font-semibold text-xs uppercase tracking-[0.2em] hover:bg-neutral-200 transition">
-          Transmettre le cahier des charges
-        </button>
-      </form>
-    </div>
-  </section>
-
-  <!-- FOOTER -->
-  <footer class="hairline-border-t py-12 px-6 bg-black text-center text-xs text-neutral-600">
-    <div class="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
-      <span class="font-serif tracking-widest uppercase text-neutral-400 text-xs">KRONOS ARBITRAGE</span>
-      <span>Spécialiste de l'importation automobile Allemagne ➔ France.</span>
-      <span>© 2026. Tous droits réservés.</span>
-    </div>
-  </footer>
+  </main>
 
   <script>
-    function recalculer() {
-      const prixAchat = parseFloat(document.getElementById('sim_prix_achat').value) || 0;
-      const prixRevente = parseFloat(document.getElementById('sim_prix_revente').value) || 0;
-      const annee = parseInt(document.getElementById('sim_annee').value);
-      const co2 = parseInt(document.getElementById('sim_co2').value) || 0;
-      const transport = parseFloat(document.getElementById('sim_transport').value) || 0;
+    // NAVIGATION ONGLETS
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab-view').forEach(el => el.classList.add('hidden'));
+      document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.classList.remove('bg-white', 'text-black', 'border-white', 'font-semibold');
+        btn.classList.add('text-neutral-400', 'border-transparent');
+      });
 
-      // Calcul Malus résiduel selon ancienneté (base 2026)
-      const anneeActuelle = 2026;
-      const ageAnnees = Math.max(0, anneeActuelle - annee);
-      
-      let malusBase = 0;
-      if (co2 > 130) {
-        malusBase = Math.min(60000, (co2 - 130) * 85);
-      }
-
-      let malusFinal = 0;
-      if (ageAnnees >= 10) {
-        malusFinal = 0; // Exonéré après 10 ans
-      } else {
-        const decote = ageAnnees * 0.10; // 10% par an
-        malusFinal = Math.max(0, Math.round(malusBase * (1 - decote)));
-      }
-
-      const fraisFixes = 280; // COC + Contrôle technique + plaques
-      const prixRevient = prixAchat + transport + malusFinal + fraisFixes;
-      const margeNette = prixRevente - prixRevient;
-
-      document.getElementById('res_malus').textContent = malusFinal.toLocaleString('fr-FR') + ' €';
-      document.getElementById('res_revient').textContent = prixRevient.toLocaleString('fr-FR') + ' €';
-      
-      const elMarge = document.getElementById('res_marge');
-      elMarge.textContent = (margeNette >= 0 ? '+ ' : '') + margeNette.toLocaleString('fr-FR') + ' €';
+      document.getElementById('view-' + tabId).classList.remove('hidden');
+      const activeBtn = document.getElementById('tab-' + tabId);
+      activeBtn.classList.remove('text-neutral-400', 'border-transparent');
+      activeBtn.classList.add('bg-white', 'text-black', 'border-white', 'font-semibold');
     }
 
-    function chargerDansSimulateur(achat, revente, annee, co2) {
-      document.getElementById('sim_prix_achat').value = achat;
-      document.getElementById('sim_prix_revente').value = revente;
-      document.getElementById('sim_annee').value = annee;
-      document.getElementById('sim_co2').value = co2;
-      recalculer();
-      document.getElementById('simulateur').scrollIntoView({ behavior: 'smooth' });
+    // DONNÉES DU RADAR (Tes repérages personnels)
+    let deals = [
+      { id: 1, model: "VW Tiguan 2.0 TDI R-Line", annee: 2021, co2: 142, prixDE: 26800, prixFR: 32500 },
+      { id: 2, model: "BMW 320d Touring M-Sport", annee: 2020, co2: 136, prixDE: 28200, prixFR: 34200 },
+      { id: 3, model: "Audi Q3 35 TDI S-Line", annee: 2022, co2: 139, prixDE: 32000, prixFR: 37900 },
+      { id: 4, model: "Mercedes Classe A 200 AMG", annee: 2021, co2: 134, prixDE: 24500, prixFR: 29800 }
+    ];
+
+    function calculMalus(annee, co2) {
+      const age = Math.max(0, 2026 - annee);
+      if (age >= 10 || co2 <= 130) return 0;
+      const baseMalus = Math.min(50000, (co2 - 130) * 80);
+      return Math.round(baseMalus * Math.max(0, 1 - (age * 0.10)));
     }
 
-    document.querySelectorAll('#simulateur input, #simulateur select').forEach(element => {
-      element.addEventListener('input', recalculer);
-    });
+    function renderDeals() {
+      const tbody = document.getElementById('deals-tbody');
+      tbody.innerHTML = '';
+      
+      deals.forEach((d, idx) => {
+        const malus = calculMalus(d.annee, d.co2);
+        const fraisLogistiques = 1100; // 800€ transport + 300€ papiers
+        const revient = d.prixDE + malus + fraisLogistiques;
+        const marge = d.prixFR - revient;
+        const roi = Math.round((marge / revient) * 100);
 
-    recalculer();
+        const tr = document.createElement('tr');
+        tr.className = "hover:bg-white/5 transition";
+        tr.innerHTML = `
+          <td class="p-4 font-semibold text-white">${d.model}</td>
+          <td class="p-4 text-neutral-400">${d.annee} • ${d.co2}g</td>
+          <td class="p-4 text-neutral-300 font-mono">${d.prixDE.toLocaleString()} €</td>
+          <td class="p-4 text-neutral-400 font-mono">${malus} €</td>
+          <td class="p-4 text-neutral-200 font-mono font-medium">${revient.toLocaleString()} €</td>
+          <td class="p-4 text-neutral-400 font-mono">${d.prixFR.toLocaleString()} €</td>
+          <td class="p-4 font-mono font-bold ${marge >= 3000 ? 'text-white' : 'text-neutral-400'}">
+            + ${marge.toLocaleString()} € <span class="text-[10px] text-neutral-500 font-normal">(${roi}%)</span>
+          </td>
+          <td class="p-4 text-right space-x-2">
+            <button onclick="injecterDansSimu(${d.prixDE}, ${d.prixFR}, ${d.annee}, ${d.co2})" class="px-2 py-1 border border-white/20 hover:border-white text-[10px] text-white">Tester</button>
+            <button onclick="supprimerDeal(${idx})" class="px-2 py-1 text-[10px] text-neutral-600 hover:text-white">✕</button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+
+      document.getElementById('stat-count').textContent = deals.length;
+    }
+
+    function ajouterDeal() {
+      const model = document.getElementById('add-model').value.trim();
+      const annee = parseInt(document.getElementById('add-annee').value);
+      const co2 = parseInt(document.getElementById('add-co2').value);
+      const prixDE = parseFloat(document.getElementById('add-prix-de').value);
+      const prixFR = parseFloat(document.getElementById('add-prix-fr').value);
+
+      if (!model || !annee || !prixDE || !prixFR) {
+        alert('Remplis au minimum le modèle, l’année, le prix DE et la cible FR.');
+        return;
+      }
+
+      deals.unshift({ id: Date.now(), model, annee, co2: co2 || 135, prixDE, prixFR });
+      renderDeals();
+
+      // Reset
+      document.getElementById('add-model').value = '';
+      document.getElementById('add-annee').value = '';
+      document.getElementById('add-co2').value = '';
+      document.getElementById('add-prix-de').value = '';
+      document.getElementById('add-prix-fr').value = '';
+    }
+
+    function supprimerDeal(idx) {
+      deals.splice(idx, 1);
+      renderDeals();
+    }
+
+    function injecterDansSimu(achat, revente, annee, co2) {
+      document.getElementById('calc-achat').value = achat;
+      document.getElementById('calc-revente').value = revente;
+      document.getElementById('calc-annee').value = annee;
+      document.getElementById('calc-co2').value = co2;
+      calculerTout();
+      switchTab('calculateur');
+    }
+
+    // CALCULATEUR TAB 2
+    function calculerTout() {
+      const achat = parseFloat(document.getElementById('calc-achat').value) || 0;
+      const revente = parseFloat(document.getElementById('calc-revente').value) || 0;
+      const annee = parseInt(document.getElementById('calc-annee').value);
+      const co2 = parseInt(document.getElementById('calc-co2').value) || 0;
+      const transport = parseFloat(document.getElementById('calc-transport').value) || 0;
+      const formalites = parseFloat(document.getElementById('calc-formalites').value) || 0;
+      const imprevus = parseFloat(document.getElementById('calc-imprevus').value) || 0;
+
+      const malus = calculMalus(annee, co2);
+      const totalFrais = transport + formalites + imprevus;
+      const revient = achat + malus + totalFrais;
+      const marge = revente - revient;
+      const roi = revient > 0 ? ((marge / revient) * 100).toFixed(1) : 0;
+
+      document.getElementById('out-achat').textContent = achat.toLocaleString('fr-FR') + ' €';
+      document.getElementById('out-malus').textContent = malus.toLocaleString('fr-FR') + ' €';
+      document.getElementById('out-frais').textContent = totalFrais.toLocaleString('fr-FR') + ' €';
+      document.getElementById('out-revient').textContent = revient.toLocaleString('fr-FR') + ' €';
+      
+      const elMarge = document.getElementById('out-marge');
+      elMarge.textContent = (marge >= 0 ? '+ ' : '') + marge.toLocaleString('fr-FR') + ' €';
+      document.getElementById('out-roi').textContent = roi + ' %';
+    }
+
+    // KANBAN DOSSIERS
+    let pipeline = [
+      { id: 101, titre: "BMW Série 3 Touring", vin: "WBA3...", col: "col-contact", note: "Appel concessionnaire Munich" },
+      { id: 102, titre: "VW Tiguan R-Line", vin: "WVGZ...", col: "col-rapatrie", note: "Plaques de transit prêtes" }
+    ];
+
+    function renderPipeline() {
+      ['col-contact', 'col-reserve', 'col-rapatrie', 'col-vente'].forEach(col => {
+        document.getElementById(col).innerHTML = '';
+      });
+
+      pipeline.forEach(item => {
+        const div = document.createElement('div');
+        div.className = "p-3 bg-carte border-subtle space-y-2";
+        div.innerHTML = `
+          <div class="font-mono text-xs text-white font-semibold">${item.titre}</div>
+          <div class="text-[10px] font-mono text-neutral-500">${item.note}</div>
+          <div class="flex justify-between items-center pt-2 border-t border-white/5">
+            <button onclick="bougerDossier(${item.id})" class="text-[10px] font-mono border border-white/20 px-2 py-0.5 text-neutral-300 hover:text-white">Avancer ➔</button>
+            <button onclick="supprimerDossier(${item.id})" class="text-[10px] text-neutral-600 hover:text-white">Suppr</button>
+          </div>
+        `;
+        const colContainer = document.getElementById(item.col);
+        if (colContainer) colContainer.appendChild(div);
+      });
+    }
+
+    function bougerDossier(id) {
+      const cols = ['col-contact', 'col-reserve', 'col-rapatrie', 'col-vente'];
+      const item = pipeline.find(x => x.id === id);
+      if (!item) return;
+      const currIdx = cols.indexOf(item.col);
+      if (currIdx < cols.length - 1) {
+        item.col = cols[currIdx + 1];
+        renderPipeline();
+      }
+    }
+
+    function supprimerDossier(id) {
+      pipeline = pipeline.filter(x => x.id !== id);
+      renderPipeline();
+    }
+
+    function ajouterDossierTest() {
+      const titre = prompt("Nom du véhicule et concession :");
+      if (!titre) return;
+      pipeline.push({ id: Date.now(), titre, vin: "N/A", col: "col-contact", note: "Nouveau contact initié" });
+      renderPipeline();
+    }
+
+    function copierTexte(id) {
+      const text = document.getElementById(id).value;
+      navigator.clipboard.writeText(text);
+      alert('Message copié dans le presse-papier.');
+    }
+
+    // INIT
+    renderDeals();
+    calculerTout();
+    renderPipeline();
   </script>
 </body>
 </html>
